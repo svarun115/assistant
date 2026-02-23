@@ -1,6 +1,0 @@
-# Ignore actual backup files (they're large)
-*.sql
-*.sql.gz
-
-# But keep the data directory structure
-!.gitkeep

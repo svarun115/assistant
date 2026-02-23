@@ -1,2 +1,0 @@
-# MCP Server Manager
-# No additional dependencies required - uses built-in tkinter
