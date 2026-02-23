@@ -1,0 +1,44 @@
+# Secrets — never commit these
+.env.production
+.env.local
+
+# MCP server credential files (real values — use .env.example for templates)
+mcp-servers/**/.env
+mcp-servers/**/.env.development
+mcp-servers/**/.env.production
+mcp-servers/**/.env.test
+
+# OAuth tokens
+tokens/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+
+# Node
+node_modules/
+dist/
+
+# SQLite state (local dev only)
+*.db
+*.db-shm
+*.db-wal
+
+# Logs
+logs/
+llm_logs/
+query_logs/
+
+# Test artifacts
+backups_test/
+chroma_db/
+
+# OS
+.DS_Store
+Thumbs.db

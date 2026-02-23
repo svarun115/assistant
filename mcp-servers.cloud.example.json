@@ -1,0 +1,41 @@
+{
+  "_comment": "Cloud MCP server config for ~/.claude.json → mcpServers section.",
+  "_usage": "Replace YOUR-DOMAIN and YOUR-MCP-API-KEY, then paste into the 'mcpServers' key in ~/.claude.json (replacing the current localhost entries). No server manager needed — servers run on the VM.",
+  "_local_equivalent": "http://127.0.0.1:9001-9005/mcp via MCP Server Manager",
+
+  "personal-journal": {
+    "type": "http",
+    "url": "https://YOUR-DOMAIN/journal-db/mcp",
+    "headers": {
+      "X-MCP-Key": "YOUR-MCP-API-KEY"
+    }
+  },
+  "garmin": {
+    "type": "http",
+    "url": "https://YOUR-DOMAIN/garmin/mcp",
+    "headers": {
+      "X-MCP-Key": "YOUR-MCP-API-KEY"
+    }
+  },
+  "google-workspace": {
+    "type": "http",
+    "url": "https://YOUR-DOMAIN/google/mcp",
+    "headers": {
+      "X-MCP-Key": "YOUR-MCP-API-KEY"
+    }
+  },
+  "google-places": {
+    "type": "http",
+    "url": "https://YOUR-DOMAIN/places/mcp",
+    "headers": {
+      "X-MCP-Key": "YOUR-MCP-API-KEY"
+    }
+  },
+  "splitwise": {
+    "type": "http",
+    "url": "https://YOUR-DOMAIN/splitwise/mcp",
+    "headers": {
+      "X-MCP-Key": "YOUR-MCP-API-KEY"
+    }
+  }
+}

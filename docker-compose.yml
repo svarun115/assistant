@@ -1,0 +1,118 @@
+version: "3.9"
+
+# Personal Assistant — MCP Servers (Cloud Deployment)
+#
+# Runs the 5 MCP servers on an Azure VM.
+# Nginx (on the host) terminates TLS and proxies each server by path:
+#   https://YOUR-DOMAIN/journal-db/mcp  → journal-db:3333
+#   https://YOUR-DOMAIN/garmin/mcp      → garmin:5555
+#   https://YOUR-DOMAIN/google/mcp      → google-workspace:3000
+#   https://YOUR-DOMAIN/places/mcp      → google-places:1111
+#   https://YOUR-DOMAIN/splitwise/mcp   → splitwise:4000
+#
+# All endpoints require X-MCP-Key header (set MCP_API_KEY in .env.production).
+#
+# Usage:
+#   docker compose --env-file .env.production up -d
+#   docker compose --env-file .env.production logs -f garmin
+#
+# Notes:
+# - Ports are bound to 127.0.0.1 only — Nginx is the only external entry point.
+# - Garmin tokens persist in the 'garmin-tokens' named volume.
+# - Google OAuth tokens are bind-mounted from ./tokens/google/ (gitignored).
+# - The assistant-server (gateway/orchestrator) is NOT deployed here.
+#   It still runs locally via Claude Code. Add it back in Phase 1g when ready.
+
+services:
+
+  journal-db:
+    build:
+      context: ./mcp-servers/db-mcp-server
+    container_name: journal-db-mcp
+    ports:
+      - "127.0.0.1:3333:3333"
+    env_file: .env.production
+    environment:
+      APP_ENV: production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:3333/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 15s
+      retries: 3
+
+  garmin:
+    build:
+      context: ./mcp-servers/garmin-mcp-server
+    container_name: garmin-mcp
+    ports:
+      - "127.0.0.1:5555:5555"
+    env_file: .env.production
+    environment:
+      GARMINTOKENS: /app/.garth
+    volumes:
+      - garmin-tokens:/app/.garth
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:5555/health"]
+      interval: 60s
+      timeout: 15s
+      start_period: 30s
+      retries: 3
+
+  google-workspace:
+    build:
+      context: ./mcp-servers/google-workspace-mcp-server
+    container_name: google-workspace-mcp
+    ports:
+      - "127.0.0.1:3000:3000"
+    env_file: .env.production
+    volumes:
+      # token.json is refreshed at runtime (rw). credentials.json is static (ro).
+      # Copy both to tokens/google/ on the VM before first deploy.
+      - ./tokens/google/token.json:/app/token.json
+      - ./tokens/google/credentials.json:/app/credentials.json:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 15s
+      retries: 3
+
+  google-places:
+    build:
+      context: ./mcp-servers/googleplaces-mcp-server
+    container_name: google-places-mcp
+    ports:
+      - "127.0.0.1:1111:1111"
+    env_file: .env.production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:1111/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 10s
+      retries: 3
+
+  splitwise:
+    build:
+      context: ./mcp-servers/splitwise-mcp-server
+    container_name: splitwise-mcp
+    ports:
+      - "127.0.0.1:4000:4000"
+    env_file: .env.production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 10s
+      retries: 3
+
+volumes:
+  garmin-tokens:
+    # Persists garth session tokens across container restarts.
+    # First deploy: authenticate once with GARMIN_EMAIL/PASSWORD set in .env.production,
+    # then remove those vars — tokens refresh automatically thereafter.
