@@ -30,7 +30,20 @@ VM_SIZE="Standard_B2ms"       # 2 vCPU, 8GB, ~$55/month
 VM_USER="ubuntu"
 SSH_KEY_PATH="${HOME}/.ssh/id_rsa"
 
+# Framework repo (assistant-server + deployment infra)
 REPO="https://github.com/svarun115/assistant"
+
+# Personal Claude config (private — skills, agents, plans)
+CLAUDE_REPO="https://github.com/svarun115/claude-personal"
+
+# MCP servers (each has its own repo)
+MCP_REPOS=(
+  "mcp-servers/db-mcp-server|https://github.com/svarun115/journal-db-mcp-server.git"
+  "mcp-servers/garmin-mcp-server|https://github.com/svarun115/garmin-mcp-server.git"
+  "mcp-servers/google-workspace-mcp-server|https://github.com/svarun115/google-workspace-mcp-server.git"
+  "mcp-servers/googleplaces-mcp-server|https://github.com/svarun115/googleplaces-mcp-server.git"
+  "mcp-servers/splitwise-mcp-server|https://github.com/svarun115/splitwise-mcp-server.git"
+)
 
 # Domain for HTTPS.
 #   Set to your own domain (e.g. "mcp.yourdomain.com") and add DNS A → VM IP.
@@ -149,12 +162,24 @@ deploy() {
   wait_for_cloud_init "$ip"
 
   echo ""
-  echo "[5/6] Cloning repo and copying secrets..."
+  echo "[5/6] Cloning repos and copying secrets..."
 
-  # Clone monorepo
+  # Framework repo
   ssh_run "$ip" "git clone '$REPO' ~/assistant 2>/dev/null || git -C ~/assistant pull"
 
-  # Copy secrets (gitignored — never in repo)
+  # MCP servers (each into its own subdirectory)
+  ssh_run "$ip" "mkdir -p ~/assistant/mcp-servers"
+  for entry in "${MCP_REPOS[@]}"; do
+    subdir="${entry%%|*}"; url="${entry##*|}"
+    echo "  Cloning $subdir..."
+    ssh_run "$ip" "git clone '$url' ~/assistant/$subdir 2>/dev/null || git -C ~/assistant/$subdir pull"
+  done
+
+  # Personal Claude config
+  echo "  Cloning .claude (skills, agents, plans)..."
+  ssh_run "$ip" "git clone '$CLAUDE_REPO' ~/assistant/.claude 2>/dev/null || git -C ~/assistant/.claude pull"
+
+  # Copy secrets (gitignored — never in any repo)
   echo "  Copying .env.production..."
   scp $SSH_OPTS -i "$SSH_KEY_PATH" \
     "$SCRIPT_DIR/.env.production" \

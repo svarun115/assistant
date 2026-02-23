@@ -61,7 +61,14 @@ case "${1:-deploy}" in
   update)
     echo "=== Rolling Update ==="
     cd "$REPO_DIR"
+    echo "  Pulling framework..."
     git pull
+    echo "  Pulling MCP servers..."
+    for dir in mcp-servers/*/; do
+      [[ -d "$REPO_DIR/$dir/.git" ]] && git -C "$REPO_DIR/$dir" pull --quiet && echo "  ✓ $dir"
+    done
+    echo "  Pulling .claude..."
+    [[ -d "$REPO_DIR/.claude/.git" ]] && git -C "$REPO_DIR/.claude" pull --quiet && echo "  ✓ .claude"
     $COMPOSE build --parallel
     $COMPOSE up -d
     $COMPOSE ps

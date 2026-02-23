@@ -2,19 +2,16 @@
 .env.production
 .env.local
 
-# MCP server local credential files
-mcp-servers/**/.env
-mcp-servers/**/.env.development
-mcp-servers/**/.env.production
-mcp-servers/**/.env.test
-
-# Google OAuth tokens (local auth files — copied to VM via scp)
+# OAuth tokens
 tokens/
-mcp-servers/google-workspace-mcp-server/token.json
-mcp-servers/google-workspace-mcp-server/credentials.json
 
-# Personal user data (copied to VM via scp, like .env.production)
-.claude/data/
+# ─── Separate repos — not tracked here ───────────────────────────────────────
+# MCP servers have their own repos (svarun115/journal-db-mcp-server, etc.)
+# Clone them locally into mcp-servers/ but they are not part of this repo.
+mcp-servers/
+
+# Personal Claude config has its own private repo (svarun115/claude-personal)
+.claude/
 
 # ─── Python ───────────────────────────────────────────────────────────────────
 __pycache__/
