@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "splitwise": {
+      "command": "splitwise-mcp-server",
+      "env": {
+        "SPLITWISE_ACCESS_TOKEN": "your_access_token_here"
+      }
+    }
+  }
+}

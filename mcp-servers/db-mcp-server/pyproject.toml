@@ -1,0 +1,85 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "journal-mcp-server"
+version = "1.0.1"
+description = "MCP Server for Personal Journal Database with PostgreSQL"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "Varun Shirivastava"}
+]
+keywords = ["mcp", "server", "journal", "postgresql", "database"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "asyncpg>=0.29.0",
+    "pydantic>=2.5.0",
+    "python-dotenv>=1.0.0",
+    "mcp>=0.9.0",
+    "python-json-logger>=2.0.7",
+    "fastapi>=0.100.0",
+    "uvicorn>=0.24.0",
+    "pgvector",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+    "pytest-timeout>=2.2.0",
+    "black>=23.0.0",
+    "mypy>=1.7.0",
+    "ruff>=0.1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/svarun115/JournalMCPServer"
+Issues = "https://github.com/svarun115/JournalMCPServer/issues"
+Repository = "https://github.com/svarun115/JournalMCPServer"
+
+[project.scripts]
+journal-mcp-server = "server:cli_entry"
+
+[tool.setuptools]
+py-modules = ["server", "config", "database", "models", "repositories"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["transport", "utils", "handlers", "tools", "backup"]
+exclude = ["tests*", "docs*"]
+
+[tool.black]
+line-length = 100
+target-version = ['py38', 'py39', 'py310', 'py311']
+
+[tool.ruff]
+line-length = 100
+target-version = "py38"
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --strict-markers"
+testpaths = ["tests"]
+pythonpath = ["."]
+asyncio_mode = "auto"

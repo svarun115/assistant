@@ -1,0 +1,28 @@
+# Secrets
+.env
+.env.*
+
+# SQLite state files — not needed in image (mounted as volumes or replaced by PG)
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+
+# Skills — mounted as volume at runtime
+skills/
+
+# User agent definition files — seeded into DB once during setup, not needed at runtime
+# system-agents/ is intentionally NOT excluded — ships with the image (filesystem-backed system agents)
+agents/
+
+# Logs and caches
+logs/
+llm_logs/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Dev tools
+.vscode/
+.idea/

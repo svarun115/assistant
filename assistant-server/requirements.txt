@@ -1,0 +1,37 @@
+# Journal Agent Orchestrator Dependencies
+
+# MCP Client
+mcp>=1.0.0
+
+# LLM Providers (install as needed)
+anthropic>=0.39.0    # For Claude
+openai>=1.50.0       # For OpenAI
+httpx>=0.27.0        # For Ollama (and general HTTP)
+
+# LangGraph - Stateful workflow orchestration
+langgraph>=0.2.0
+langgraph-checkpoint-sqlite>=2.0.0
+langgraph-checkpoint-postgres>=2.0.0  # PostgreSQL checkpointer (production)
+langchain-core>=0.3.0
+aiosqlite>=0.20.0    # Async SQLite for AsyncSqliteSaver (local dev fallback)
+
+# PostgreSQL (production)
+psycopg[binary]>=3.1.0   # psycopg3 — required by langgraph-checkpoint-postgres
+psycopg-pool>=3.1.0      # Connection pool for AsyncPostgresSaver
+
+# Credential encryption
+cryptography>=43.0.0  # AES-256-GCM for CredentialStore (user_credentials table)
+
+# Scheduler
+croniter>=3.0.0  # Cron expression parsing for AgentScheduler next_run computation
+
+# Agent system
+pyyaml>=6.0.0    # Parse YAML frontmatter in HEARTBEAT.md for schedule declarations
+
+# Core utilities
+python-dotenv>=1.0.0 # Environment variable management
+
+# Web API
+fastapi>=0.115.0
+uvicorn>=0.32.0
+websockets>=14.0

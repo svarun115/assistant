@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journal Agent</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Marked for Markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Left Sidebar: Dev Panel -->
+        <aside class="sidebar left-sidebar" id="leftSidebar">
+            <div class="sidebar-header">
+                <h2><i data-lucide="code-2"></i> Dev</h2>
+            </div>
+            <div class="sidebar-content">
+                <!-- Model Usage Section (collapsible) -->
+                <div class="debug-section collapsible expanded" id="modelUsageSection">
+                    <div class="section-header" onclick="toggleSection('modelUsageSection')">
+                        <h3><i data-lucide="bar-chart-3"></i> Model Usage</h3>
+                        <i data-lucide="chevron-down" class="section-chevron"></i>
+                    </div>
+                    <div class="section-content">
+                        <!-- Chat Model Tile -->
+                        <div class="model-tile" id="chatModelTile">
+                            <div class="tile-header">
+                                <i data-lucide="message-square"></i>
+                                <span>Chat</span>
+                            </div>
+                            <div class="tile-model-picker">
+                                <button class="model-selector-btn" id="chatModelBtn">
+                                    <span id="currentChatModel">GPT-5 Nano</span>
+                                    <i data-lucide="chevron-down"></i>
+                                </button>
+                                <div class="model-dropdown" id="chatModelDropdown">
+                                    <!-- Populated by JS -->
+                                </div>
+                            </div>
+                            <div class="tile-filters" data-tile="chat">
+                                <button class="filter-btn active" data-filter="thread">Thread</button>
+                                <button class="filter-btn" data-filter="day">Day</button>
+                                <button class="filter-btn" data-filter="week">Week</button>
+                                <button class="filter-btn" data-filter="month">Month</button>
+                                <button class="filter-btn" data-filter="all">All</button>
+                            </div>
+                            <div class="tile-usage" id="chatUsage">
+                                <div class="empty-state">No API calls yet</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Distillation Model Tile -->
+                        <div class="model-tile" id="distillModelTile">
+                            <div class="tile-header">
+                                <i data-lucide="sparkles"></i>
+                                <span>Distillation</span>
+                            </div>
+                            <div class="tile-model-picker">
+                                <button class="model-selector-btn" id="distillModelBtn">
+                                    <span id="currentDistillModel">GPT-5 Nano</span>
+                                    <i data-lucide="chevron-down"></i>
+                                </button>
+                                <div class="model-dropdown" id="distillModelDropdown">
+                                    <!-- Populated by JS -->
+                                </div>
+                            </div>
+                            <div class="tile-filters" data-tile="distill">
+                                <button class="filter-btn active" data-filter="thread">Thread</button>
+                                <button class="filter-btn" data-filter="day">Day</button>
+                                <button class="filter-btn" data-filter="week">Week</button>
+                                <button class="filter-btn" data-filter="month">Month</button>
+                                <button class="filter-btn" data-filter="all">All</button>
+                            </div>
+                            <div class="tile-usage" id="distillUsage">
+                                <div class="empty-state">No distillation yet</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tools Usage Section (not a model tile, just info) -->
+                <div class="debug-section collapsible" id="toolsSection">
+                    <div class="section-header" onclick="toggleSection('toolsSection')">
+                        <h3><i data-lucide="wrench"></i> Tools</h3>
+                        <i data-lucide="chevron-down" class="section-chevron"></i>
+                    </div>
+                    <div class="section-content">
+                        <div class="tool-usage-list" id="toolUsageList">
+                            <div class="empty-state">No tools called yet</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="debug-section collapsible" id="llmLogsSection">
+                    <div class="section-header" onclick="toggleSection('llmLogsSection')">
+                        <h3><i data-lucide="scroll-text"></i> LLM Logs</h3>
+                        <i data-lucide="chevron-down" class="section-chevron"></i>
+                    </div>
+                    <div class="section-content">
+                        <div class="llm-logs-list" id="llmLogsList">
+                            <div class="empty-state">No logs yet</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Chat Area -->
+            <main class="chat-container">
+            <!-- Header -->
+            <header class="chat-header">
+                <div class="header-left">
+                    <button class="icon-btn" id="toggleLeftSidebar" title="Toggle servers panel">
+                        <i data-lucide="panel-left"></i>
+                    </button>
+                    <button class="icon-btn" id="toggleThreads" title="Conversation history">
+                        <i data-lucide="history"></i>
+                    </button>
+                    <div class="thread-info" id="threadInfo">
+                        <button class="emoji-picker-btn" id="threadEmojiBtn" title="Set thread emoji">💬</button>
+                        <input type="text" class="thread-title-input" id="currentThreadTitle" value="New Conversation" placeholder="Name this conversation...">
+                        <div class="emoji-picker-popup" id="emojiPickerPopup"></div>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <button class="icon-btn" id="toggleMcpPane" title="Toggle MCP Servers">
+                        <i data-lucide="server"></i>
+                    </button>
+                    <button class="icon-btn" id="newThread" title="New conversation (Ctrl+N)">
+                        <i data-lucide="plus"></i>
+                    </button>
+                    <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+                        <i data-lucide="sun" id="themeIconLight"></i>
+                        <i data-lucide="moon" id="themeIconDark" style="display:none"></i>
+                    </button>
+                    <button class="icon-btn" id="clearChat" title="Clear conversation">
+                        <i data-lucide="trash-2"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Threads Drawer -->
+            <div class="threads-drawer" id="threadsDrawer">
+                <div class="threads-header">
+                    <h3><i data-lucide="message-square-text"></i> Conversations</h3>
+                    <button class="icon-btn" id="closeThreads" title="Close">
+                        <i data-lucide="x"></i>
+                    </button>
+                </div>
+                <div class="threads-search">
+                    <input type="text" id="threadSearch" placeholder="Search conversations...">
+                </div>
+                <div class="threads-list" id="threadsList">
+                    <div class="loading">Loading threads...</div>
+                </div>
+            </div>
+
+            <!-- Chat Messages -->
+            <div class="chat-messages" id="chatMessages">
+                <div class="welcome-message">
+                    <h2>👋 Welcome to Journal Agent</h2>
+                    <p>I'm your AI journaling assistant. I can help you:</p>
+                    <ul>
+                        <li>📝 Log daily activities and events</li>
+                        <li>🔍 Query your journal history</li>
+                        <li>🔗 Link workouts to Garmin data</li>
+                        <li>📊 Analyze patterns and trends</li>
+                    </ul>
+                    <p>Try saying: <em>"Add journal entry for yesterday"</em></p>
+                </div>
+            </div>
+
+            <!-- Thinking Indicator -->
+            <div class="thinking-indicator" id="thinkingIndicator">
+                <div class="thinking-dots">
+                    <span></span><span></span><span></span>
+                </div>
+                <span>Thinking...</span>
+            </div>
+
+            <!-- Input Area -->
+            <div class="chat-input-container">
+                <div class="input-wrapper">
+                    <textarea 
+                        id="messageInput" 
+                        placeholder="Type your message..." 
+                        rows="1"
+                        autofocus
+                    ></textarea>
+                    <button class="send-btn" id="sendBtn" title="Send message">
+                        <i data-lucide="send"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+
+            <!-- MCP Servers Pane (collapsible) -->
+            <aside class="mcp-pane collapsed" id="mcpPane">
+                <div class="pane-header">
+                    <h2><i data-lucide="server"></i> MCP Servers</h2>
+                    <button class="icon-btn" id="refreshTools" title="Refresh MCP">
+                        <i data-lucide="refresh-cw"></i>
+                    </button>
+                </div>
+                <div class="mcp-servers-list" id="toolsList">
+                    <div class="loading">Loading...</div>
+                </div>
+            </aside>
+        </div><!-- end main-content -->
+
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

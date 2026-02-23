@@ -1,0 +1,1175 @@
+{
+  "cluster": "aria",
+  "url": "https://kusto.aria.microsoft.com",
+  "lastUpdated": "2025-02-05",
+  "databases": [
+    {
+      "prettyName": "Action Metrics",
+      "databaseName": "4b708dd13ad34805968b29818e782fca"
+    },
+    {
+      "prettyName": "Aria Ingestion Dev",
+      "databaseName": "08adc87742dc4eefaf0e6696bed932c6"
+    },
+    {
+      "prettyName": "Assignments UI",
+      "databaseName": "0451e87c133c4d25b73b87b9896d5c8d"
+    },
+    {
+      "prettyName": "Assignments UI Dev",
+      "databaseName": "5bd32af70a814059960eb5577e306da3"
+    },
+    {
+      "prettyName": "Basilio",
+      "databaseName": "35f4a7d85e6d433ab2a11575b64e3494"
+    },
+    {
+      "prettyName": "Class Notebook Add-in",
+      "databaseName": "84e9ca4c37064efba2b68b6e76b717cd"
+    },
+    {
+      "prettyName": "DIG BI",
+      "databaseName": "2cc077ef03914a838d91a2cf0177c230"
+    },
+    {
+      "prettyName": "Edu Analytics Insights",
+      "databaseName": "66336d1539434a1db24515c655504c89"
+    },
+    {
+      "prettyName": "Edu Support Ticket INT",
+      "databaseName": "b332209f05d448ef8c1c6f82224f6048"
+    },
+    {
+      "prettyName": "Edu Support Ticket PROD",
+      "databaseName": "c442e3ea13d145a3b7fa6dacb5e95ce8"
+    },
+    {
+      "prettyName": "Edu Teacher Analytics DEV",
+      "databaseName": "a9687f34eb0c409fac7fa48b81af2baf"
+    },
+    {
+      "prettyName": "Edu Teacher Analytics INT",
+      "databaseName": "d0a07e9fd8a044fd9c7f81e6a021ae0c"
+    },
+    {
+      "prettyName": "Edu Teacher Analytics PPE",
+      "databaseName": "cce2835098154e07a933dd95cc2a3884"
+    },
+    {
+      "prettyName": "Edu Teacher Analytics PROD",
+      "databaseName": "4fdfaa37845e4dc8b314113576c2a433"
+    },
+    {
+      "prettyName": "Evernote to OneNote Win32 Prod",
+      "databaseName": "91d354ab39e94a6ba17b0578da0331fa"
+    },
+    {
+      "prettyName": "Flipgrid",
+      "databaseName": "7d3cd303275943ba8a7d409a62c3f97e"
+    },
+    {
+      "prettyName": "Flipgrid Manage",
+      "databaseName": "9f4802f1f83c49aea0a421887ab3aa40"
+    },
+    {
+      "prettyName": "Flipgrid Production",
+      "databaseName": "f635067660aa469681deeec7657c8c8d"
+    },
+    {
+      "prettyName": "Intentional NP",
+      "databaseName": "58884b5863fe44eb8be7a7b3268a4f47"
+    },
+    {
+      "prettyName": "Intentional Whiteboard",
+      "databaseName": "14e2099a577e4b0591a9217da931ae04"
+    },
+    {
+      "prettyName": "Intentional Whiteboard Preproduction",
+      "databaseName": "b6d86eb283924dab8cdb2e02d095e5a2"
+    },
+    {
+      "prettyName": "Iskulshr",
+      "databaseName": "6ae5f8d782d141cdaab1a0b635213eee"
+    },
+    {
+      "prettyName": "LOR PROD",
+      "databaseName": "dfed7e64a433472bae8101a4bb563d39"
+    },
+    {
+      "prettyName": "Learning Tools Api Diagnostics",
+      "databaseName": "568b65b5bc634c1d91102685a42a61e1"
+    },
+    {
+      "prettyName": "Learning Tools Immersive Reader UWP",
+      "databaseName": "b4150a61ed9340efaf8c53b90f9b357f"
+    },
+    {
+      "prettyName": "Learning Tools Service Production",
+      "databaseName": "9528d756fa2e4601bc1b0554022cf73b"
+    },
+    {
+      "prettyName": "Learning Tools Usage",
+      "databaseName": "799ab8153c1141c6baeef72739129025"
+    },
+    {
+      "prettyName": "Learning Tools for OneNote",
+      "databaseName": "740ac0c68bf249f68830f8ba5ce47810"
+    },
+    {
+      "prettyName": "Learning Tools for OneNote Dev",
+      "databaseName": "7a32191518014f6686764f7ef22ffb73"
+    },
+    {
+      "prettyName": "Lumos",
+      "databaseName": "ec40a309b2d540f68d7477b1ca96a064"
+    },
+    {
+      "prettyName": "LumosInt",
+      "databaseName": "0bd503d6c227445fba17ae515fb8a4da"
+    },
+    {
+      "prettyName": "MATS_Office",
+      "databaseName": "faab4ead691e451eb230afc98a28e0f2"
+    },
+    {
+      "prettyName": "MATS_Reporting",
+      "databaseName": "c05c061f5ee144b08355cd9ea4c55a62"
+    },
+    {
+      "prettyName": "MEC FHL",
+      "databaseName": "4a0a98ff5866461db4bedf925e81f362"
+    },
+    {
+      "prettyName": "MEC FHL",
+      "databaseName": "94c4eb17dc4b4e9492e715ffea471bf0"
+    },
+    {
+      "prettyName": "MEC FHL",
+      "databaseName": "521ea554842840c5ac44f72b78d49335"
+    },
+    {
+      "prettyName": "MEC FHL - Cosmos",
+      "databaseName": "08fad4318fd34f25a67f89d477bd2a00"
+    },
+    {
+      "prettyName": "MakeItMine EDU",
+      "databaseName": "ec0fd22b2cb94b858b7498ce743962ea"
+    },
+    {
+      "prettyName": "Mobile Planner Pre-Prod",
+      "databaseName": "642e31ab5ac34962a44cdc35a15c2716"
+    },
+    {
+      "prettyName": "Mobile Planner Prod",
+      "databaseName": "674ad8cefe65472f99af2aad141fe159"
+    },
+    {
+      "prettyName": "Notes Teams Integration",
+      "databaseName": "52459a8ca44a43c8bcb18df10c8d1e8d"
+    },
+    {
+      "prettyName": "ONDCNotesIntegration",
+      "databaseName": "41701a0d2ecf4ad6a3d47b4352bf3937"
+    },
+    {
+      "prettyName": "ONIntelligence",
+      "databaseName": "d9d8cbdf093f475880597193a2e5cc87"
+    },
+    {
+      "prettyName": "OTEL Telemetry Config Service",
+      "databaseName": "e4bcc87c65784ffa8e929042441cb572"
+    },
+    {
+      "prettyName": "OTEL Tools",
+      "databaseName": "4c6a0fb46b8f4e8c8575f9c3a9da9f96"
+    },
+    {
+      "prettyName": "OTEL-ComplianceAutoBugger",
+      "databaseName": "c004920df7494fea9e67a83d5f61c73c"
+    },
+    {
+      "prettyName": "OTEL-EventSurvey",
+      "databaseName": "dc010f7c004a49a9a944dd2c83f2809a"
+    },
+    {
+      "prettyName": "OTriage",
+      "databaseName": "b68e3c09968047b0a3d76c3e2cb6d39d"
+    },
+    {
+      "prettyName": "OasysMail",
+      "databaseName": "320219375ede4d44ab28b4366ef14b88"
+    },
+    {
+      "prettyName": "OasysResults",
+      "databaseName": "de9b599503654d50ba07b5a40adf6afa"
+    },
+    {
+      "prettyName": "Office AI",
+      "databaseName": "3b1076870e3f44f7856ef795326d89c7"
+    },
+    {
+      "prettyName": "Office AI Automate",
+      "databaseName": "38232a0da3634208aedb365cb166112a"
+    },
+    {
+      "prettyName": "Office AI Hub SBS Eval",
+      "databaseName": "0ded2db63a7a4aa99d0bca5869cfe599"
+    },
+    {
+      "prettyName": "Office AI Test Judgement",
+      "databaseName": "716bb85bcda14e45967809c90b100829"
+    },
+    {
+      "prettyName": "Office AIHub",
+      "databaseName": "86e373bba78849b9a171f1691f60be36"
+    },
+    {
+      "prettyName": "Office AIHubShared",
+      "databaseName": "3e303231999547c4b2a9e6c535b94961"
+    },
+    {
+      "prettyName": "Office Access",
+      "databaseName": "7aa8857dfe484497a82c0d5f613b6c83"
+    },
+    {
+      "prettyName": "Office Accessibility",
+      "databaseName": "92468150dd144e02a22a7f14aeb25aec"
+    },
+    {
+      "prettyName": "Office ActivityFeed",
+      "databaseName": "6ec2d1c85a3f48918f637c0d25bab63f"
+    },
+    {
+      "prettyName": "Office Ads",
+      "databaseName": "fecbb3f19c5148c3af951a3ffa91c15d"
+    },
+    {
+      "prettyName": "Office AirSpace",
+      "databaseName": "da06315a64204a91b8c35628ae841a61"
+    },
+    {
+      "prettyName": "Office AirTrafficControl",
+      "databaseName": "901aa526bead4160a40128759dbefe1f"
+    },
+    {
+      "prettyName": "Office Android",
+      "databaseName": "7e90593cb38e43c08344e14a8f21f1a7"
+    },
+    {
+      "prettyName": "Office Android EarlyTelemetry",
+      "databaseName": "0f7e2d7f1132433b82c0b49a3e7da349"
+    },
+    {
+      "prettyName": "Office AppCompat",
+      "databaseName": "e35e38bb2f4e4141ba082f2262aa1b83"
+    },
+    {
+      "prettyName": "Office AppDocs",
+      "databaseName": "3eb9cdc7677e47f4a6ebf3a5dcb3f82f"
+    },
+    {
+      "prettyName": "Office AppHome Pages",
+      "databaseName": "73cd9ea53a48401197086beffaa61fa6"
+    },
+    {
+      "prettyName": "Office AppHostingSdk",
+      "databaseName": "7ada8d16f9234e2093f080920f21dd7d"
+    },
+    {
+      "prettyName": "Office AssistTab",
+      "databaseName": "1bc0e5a1e3cf4c91b2212cb8b253123e"
+    },
+    {
+      "prettyName": "Office AugLoop",
+      "databaseName": "3de4087d4de34817b1c376e3d1e6e293"
+    },
+    {
+      "prettyName": "Office AutoTemplate",
+      "databaseName": "d122cf13e49d4431b31b61569b7bbcf2"
+    },
+    {
+      "prettyName": "Office Bebop",
+      "databaseName": "153a4eed576645eb912738daf2f46e49"
+    },
+    {
+      "prettyName": "Office Browse",
+      "databaseName": "33bd71353f7440dbb8af2ae082bac9f5"
+    },
+    {
+      "prettyName": "Office BusinessCheckout",
+      "databaseName": "fe93dbe9f45a4f7b9aade033323a431c"
+    },
+    {
+      "prettyName": "Office CCCO",
+      "databaseName": "b22a201c3f1d41d28ccc399ba6cc9ca2"
+    },
+    {
+      "prettyName": "Office Canvas",
+      "databaseName": "625e97e3f60f498b93f637a1326ca839"
+    },
+    {
+      "prettyName": "Office CareerCoach",
+      "databaseName": "8633eacd547641a68fd0bf7f8f7609fa"
+    },
+    {
+      "prettyName": "Office Charting",
+      "databaseName": "8984684171524f0c86ea1d654968b2c4"
+    },
+    {
+      "prettyName": "Office ClickToRun",
+      "databaseName": "0da1917aa56040d3a011c3813ca36107"
+    },
+    {
+      "prettyName": "Office Collect",
+      "databaseName": "cf0fa690722c4ec2bfee1dd8f3d3c769"
+    },
+    {
+      "prettyName": "Office CommandExecution",
+      "databaseName": "67019aa758914ee4976e974d2670d5e5"
+    },
+    {
+      "prettyName": "Office Compliance",
+      "databaseName": "7027c5657baa4c8c94c98ed600467c8c"
+    },
+    {
+      "prettyName": "Office ConsumerRedemption",
+      "databaseName": "33477427efb54a3198f21daa7775e25c"
+    },
+    {
+      "prettyName": "Office Content Cards",
+      "databaseName": "04f2858d046045ff8c63c9387c65862d"
+    },
+    {
+      "prettyName": "Office ContextualActions",
+      "databaseName": "aa084d4e49544a5dbfddc44c5539ac9a"
+    },
+    {
+      "prettyName": "Office Copilot Lab",
+      "databaseName": "08ef9c3b37c94441a974354b2f79821c"
+    },
+    {
+      "prettyName": "Office CopilotHub",
+      "databaseName": "f0c2cae0e70447abbaf16b2986345414"
+    },
+    {
+      "prettyName": "Office CoreUI",
+      "databaseName": "ecd7404a1d7d45a1a54b18b384f8cc8d"
+    },
+    {
+      "prettyName": "Office Create",
+      "databaseName": "69bf91c00e32429cb09b9f7003682c8f"
+    },
+    {
+      "prettyName": "Office CreateTab",
+      "databaseName": "7e6fcf9670144136aca3042cc110a6ba"
+    },
+    {
+      "prettyName": "Office Customer Voice",
+      "databaseName": "09c41ed04e034bbd8e020fba0ffadfaf"
+    },
+    {
+      "prettyName": "Office DNM AugLoop",
+      "databaseName": "86d9bfcc629449658d10a1f4dc1484c1"
+    },
+    {
+      "prettyName": "Office DNM Excel",
+      "databaseName": "58fd209df5254081ba538f7f4bc34ef5"
+    },
+    {
+      "prettyName": "Office DNM FileIO",
+      "databaseName": "66cce405bdba4226887201778aca8bb8"
+    },
+    {
+      "prettyName": "Office DNM Loop",
+      "databaseName": "970a2f2bd232416db9f00ce2dc4e0490"
+    },
+    {
+      "prettyName": "Office DNM PenAndInk",
+      "databaseName": "d219897402464c938e8b0717af58c176"
+    },
+    {
+      "prettyName": "Office DNM Sandbox",
+      "databaseName": "b0aae8a3009047b9bf4d3b17439319b6"
+    },
+    {
+      "prettyName": "Office DNM Telemetry",
+      "databaseName": "67074e509c164bcaaf85b53c0ad0cde2"
+    },
+    {
+      "prettyName": "Office DNM Visio Online",
+      "databaseName": "feba3d98f7c0481c8b63754573a80618"
+    },
+    {
+      "prettyName": "Office DNM Word",
+      "databaseName": "65775e59597b4350afafc56eaf4e750f"
+    },
+    {
+      "prettyName": "Office DNM Word Online",
+      "databaseName": "541f81cf685f4bccb9e5395b0add4d41"
+    },
+    {
+      "prettyName": "Office Diagnostics",
+      "databaseName": "70ec13d4fa0b40e6a470b0d5aaf5a827"
+    },
+    {
+      "prettyName": "Office DiagnosticsSystem",
+      "databaseName": "c2dec09216c44cb6b3bb8689c0886e81"
+    },
+    {
+      "prettyName": "Office Dime",
+      "databaseName": "70ed233fa6a34865898dfc05cb334775"
+    },
+    {
+      "prettyName": "Office Discovery",
+      "databaseName": "29a295a4371e417cba57367fdc07bf97"
+    },
+    {
+      "prettyName": "Office Docs",
+      "databaseName": "c274b3e05ac5448dae8fbb7466da6acb"
+    },
+    {
+      "prettyName": "Office DocumentXRay",
+      "databaseName": "e305db0c6da74e7ea3b0ee2467608180"
+    },
+    {
+      "prettyName": "Office DynamicCanvas",
+      "databaseName": "350d24c16a934c2d9734791ed7301d8e"
+    },
+    {
+      "prettyName": "Office Engagement",
+      "databaseName": "ceda5b13e30f4f9da3617f64bfcb9a6b"
+    },
+    {
+      "prettyName": "Office Engineering",
+      "databaseName": "3e4eb98e06f94d89817a6e718980cf35"
+    },
+    {
+      "prettyName": "Office Excel",
+      "databaseName": "19eb5e37de684ce38ce5cf3d5842d3f7"
+    },
+    {
+      "prettyName": "Office Excel Agent Evaluations",
+      "databaseName": "dbd8bde4f12545bf87342a2f17dd0d35"
+    },
+    {
+      "prettyName": "Office Excel Coauth",
+      "databaseName": "0d96bb3db51349c6ad8309ed1858d441"
+    },
+    {
+      "prettyName": "Office Excel Insights Services",
+      "databaseName": "6ba2253e959648eb888b4a1ab6f80b9e"
+    },
+    {
+      "prettyName": "Office Excel Online",
+      "databaseName": "fad3bd1d8e4b4c06894bd7bac80e4f02"
+    },
+    {
+      "prettyName": "Office Excel Online Data",
+      "databaseName": "011776870b754a649aedc9456ac07a97"
+    },
+    {
+      "prettyName": "Office Excel Online Health",
+      "databaseName": "e76e8055912d482eb56ea5dad2fd5a97"
+    },
+    {
+      "prettyName": "Office Excel PROSE Evaluations",
+      "databaseName": "48c347a3f0aa429ba6509ad983e6a501"
+    },
+    {
+      "prettyName": "Office Experimentation",
+      "databaseName": "e6e58d16cfb94942b795b4918258153a"
+    },
+    {
+      "prettyName": "Office Extensibility",
+      "databaseName": "db334b301e7b474db5e0f02f07c51a47"
+    },
+    {
+      "prettyName": "Office Feed Prod",
+      "databaseName": "7a9794f2d88f4ee681e0142700c12f35"
+    },
+    {
+      "prettyName": "Office Feedback",
+      "databaseName": "d79e824386c4441cb8c1d4ae15690526"
+    },
+    {
+      "prettyName": "Office FileIO",
+      "databaseName": "d2b065c5ae634beb9cec4813140e22da"
+    },
+    {
+      "prettyName": "Office FileSystem",
+      "databaseName": "41b3c8e8dde3480085aa650572506bdb"
+    },
+    {
+      "prettyName": "Office Floodgate",
+      "databaseName": "d526a9052e444f1d8706529ef111b101"
+    },
+    {
+      "prettyName": "Office Fluid",
+      "databaseName": "6a8929bcfc6d44e9b13fee392ada9cf0"
+    },
+    {
+      "prettyName": "Office Fluid CardLoop",
+      "databaseName": "ed981353800d49a1bacb17544b041351"
+    },
+    {
+      "prettyName": "Office Fluid LoopMobile",
+      "databaseName": "07c041c54b124661accc2b2b7b4b1d1f"
+    },
+    {
+      "prettyName": "Office Fluid MSAI Unfurling",
+      "databaseName": "54ef99684eaf4d6693210dc41a9e4a13"
+    },
+    {
+      "prettyName": "Office Fluid Test",
+      "databaseName": "742fa5a288b045e5beab1a2b8e445a71"
+    },
+    {
+      "prettyName": "Office Fluid Workspaces",
+      "databaseName": "954f09bf2c8a4321823cdeae34562b5c"
+    },
+    {
+      "prettyName": "Office Forms FormsService",
+      "databaseName": "61a0ef7ed446437a955d73b570d7fa2a"
+    },
+    {
+      "prettyName": "Office Forms HiveService",
+      "databaseName": "e9a84df37f9242d99f2647cfffaafc8a"
+    },
+    {
+      "prettyName": "Office Forms Web",
+      "databaseName": "4e990506778b4d9cbf05300e98315eed"
+    },
+    {
+      "prettyName": "Office Glint",
+      "databaseName": "fde6dc77611f4f00ad8a58296c9ad165"
+    },
+    {
+      "prettyName": "Office Globalization",
+      "databaseName": "fa2d8726ec914a019f61aa83d1a0f156"
+    },
+    {
+      "prettyName": "Office Graphics",
+      "databaseName": "cfcfdb91c68c4329bb8b7cb7babb3cf7"
+    },
+    {
+      "prettyName": "Office HttpLiblet",
+      "databaseName": "8bded8a350144d2eac2351b507bdb9ae"
+    },
+    {
+      "prettyName": "Office IdeasNitro",
+      "databaseName": "c2354b479c83417f8ec0963f439c8be8"
+    },
+    {
+      "prettyName": "Office Identity",
+      "databaseName": "5c65bbc4edbf480d9637ace04d62bd98"
+    },
+    {
+      "prettyName": "Office Identity Service",
+      "databaseName": "bfd38fb74e1b467495106a7dd7b35f27"
+    },
+    {
+      "prettyName": "Office Insights",
+      "databaseName": "250a372c4a854d8fb120ef0366f9410c"
+    },
+    {
+      "prettyName": "Office IntelligentServices",
+      "databaseName": "ca7bd155a4374d74b39a378fd265640b"
+    },
+    {
+      "prettyName": "Office JsDevTools",
+      "databaseName": "a876699ec4594b119c3dc9a9079aeec5"
+    },
+    {
+      "prettyName": "Office Learning",
+      "databaseName": "3e590fb83f954cc0a588c689fdb8e8fd"
+    },
+    {
+      "prettyName": "Office Lens",
+      "databaseName": "96782f7d148f478d977bfedcc8155217"
+    },
+    {
+      "prettyName": "Office Licensing",
+      "databaseName": "c1a0db0127964674a0d62fde5ab0fe62"
+    },
+    {
+      "prettyName": "Office Lookup",
+      "databaseName": "a3dd501143fd45658d820bd954c342cf"
+    },
+    {
+      "prettyName": "Office Lumos",
+      "databaseName": "42b2501407da4f72a752e71716a22634"
+    },
+    {
+      "prettyName": "Office M365Designer",
+      "databaseName": "983f1bcd0b894275ba7e558847b813f4"
+    },
+    {
+      "prettyName": "Office MAU Client",
+      "databaseName": "5e84410f27304d289f168a76d51b240a"
+    },
+    {
+      "prettyName": "Office ML",
+      "databaseName": "655fe2f4f8414e4db3f881ce2bb96fc8"
+    },
+    {
+      "prettyName": "Office MSTodo",
+      "databaseName": "724f9175c0e94324aa3aefe0fbca113d"
+    },
+    {
+      "prettyName": "Office Maker",
+      "databaseName": "17e1b135bde6444a97fabb94d77f033d"
+    },
+    {
+      "prettyName": "Office Manageability",
+      "databaseName": "e28dd45676b34a2dafb516ada48fcfd6"
+    },
+    {
+      "prettyName": "Office Math",
+      "databaseName": "27999e6d11cf4453889db8cb19619c01"
+    },
+    {
+      "prettyName": "Office MeControl",
+      "databaseName": "bc3b3876924a404a9c6046ea3633a5da"
+    },
+    {
+      "prettyName": "Office Media",
+      "databaseName": "a6884ea2e66b4f188008839b476db56c"
+    },
+    {
+      "prettyName": "Office Messaging",
+      "databaseName": "5609754954df4634813121547d04372c"
+    },
+    {
+      "prettyName": "Office Migration Experience",
+      "databaseName": "4e8fa41bdbd644ee8dc55772652b4ede"
+    },
+    {
+      "prettyName": "Office MigrationAssistant",
+      "databaseName": "3ac20f854a9843089fde1101465a4f2f"
+    },
+    {
+      "prettyName": "Office MomentsActionsPlugin",
+      "databaseName": "7153e184d8104f68ad5a68a0210c278f"
+    },
+    {
+      "prettyName": "Office NaturalLanguage",
+      "databaseName": "71cc1046851042108843d90e5d3ef6c1"
+    },
+    {
+      "prettyName": "Office OCM",
+      "databaseName": "1c74c2e890d041c2a524e6c394807ba0"
+    },
+    {
+      "prettyName": "Office OGX",
+      "databaseName": "05512e97d9c3475191242865b9fae71e"
+    },
+    {
+      "prettyName": "Office OfficeBot",
+      "databaseName": "df5e898e189b42c5a85d1a8f0c5b67e1"
+    },
+    {
+      "prettyName": "Office OfficeMobile",
+      "databaseName": "40e6164bad1444c88f0a4a5c151a86b2"
+    },
+    {
+      "prettyName": "Office OmexRex",
+      "databaseName": "52aa733641a74071af3215b68bb7c298"
+    },
+    {
+      "prettyName": "Office OneNote",
+      "databaseName": "3de38b41008a4da5a5381ef307f91597"
+    },
+    {
+      "prettyName": "Office OneNote Online",
+      "databaseName": "1705ef36a51840648341da866d62baf8"
+    },
+    {
+      "prettyName": "Office OneNote Online Data",
+      "databaseName": "86258c80efed47d9b34bf77fc663b381"
+    },
+    {
+      "prettyName": "Office OneNote Online Health",
+      "databaseName": "c6393e4ed4b94e3baf9a46aa6585dce0"
+    },
+    {
+      "prettyName": "Office OneNote Services",
+      "databaseName": "05c05e92245a4d658c02f528bf6c05fc"
+    },
+    {
+      "prettyName": "Office OneNoteIntegrations",
+      "databaseName": "6c530cfc6dd549f2a4a3e0e3c8cfdd22"
+    },
+    {
+      "prettyName": "Office Online",
+      "databaseName": "79b56d2f6f2444f1a3d7f7c7f12bcc0c"
+    },
+    {
+      "prettyName": "Office Online Internal",
+      "databaseName": "ad732d5fbca54241a11f28b48c682068"
+    },
+    {
+      "prettyName": "Office Opal App",
+      "databaseName": "6f68d479bbe34942bc5bc159ceef8e6a"
+    },
+    {
+      "prettyName": "Office Outlook Desktop",
+      "databaseName": "d807609276744245baf81bf7bc8033f6"
+    },
+    {
+      "prettyName": "Office PLG",
+      "databaseName": "2e0b29c20c6d488eb500534365da6bae"
+    },
+    {
+      "prettyName": "Office PenAndInk",
+      "databaseName": "84179d49a39842878be3b5f5a948a89a"
+    },
+    {
+      "prettyName": "Office People",
+      "databaseName": "9471ad91d4fe4df8935b21dee6f08e4d"
+    },
+    {
+      "prettyName": "Office Performance",
+      "databaseName": "9b9b073d5a43495fae37f003b99e8ce3"
+    },
+    {
+      "prettyName": "Office Persona Studio",
+      "databaseName": "10d9e705da174810a003e5964a34b019"
+    },
+    {
+      "prettyName": "Office Personalization",
+      "databaseName": "4a49412b92ac41aab3d6427678d72c81"
+    },
+    {
+      "prettyName": "Office PodcastingStudio",
+      "databaseName": "1e7184347568499fa4bd7f3f0af249da"
+    },
+    {
+      "prettyName": "Office PowerBI",
+      "databaseName": "a396d7578da948e084182884bf406f95"
+    },
+    {
+      "prettyName": "Office PowerPoint",
+      "databaseName": "e97859101370486fbcb67f5a023da3fc"
+    },
+    {
+      "prettyName": "Office PowerPoint Online",
+      "databaseName": "b664cab4b3f24a739be75b93b026749e"
+    },
+    {
+      "prettyName": "Office PowerPoint Online Data",
+      "databaseName": "35612b11d234460da5c673d7b172fd93"
+    },
+    {
+      "prettyName": "Office PowerPoint Online Health",
+      "databaseName": "706f939c0d24440ba8dfb0838ed33611"
+    },
+    {
+      "prettyName": "Office PrepareTab",
+      "databaseName": "60aa9bb121314b779123d1710b54b43e"
+    },
+    {
+      "prettyName": "Office Privacy",
+      "databaseName": "0cc923f8e48042f9b5193007cf34d1ae"
+    },
+    {
+      "prettyName": "Office Programmability",
+      "databaseName": "98aab172938b4a83a62a76e35df9c1bf"
+    },
+    {
+      "prettyName": "Office ProgrammableSurfaces",
+      "databaseName": "cf7a002ba9374401bace61695550f784"
+    },
+    {
+      "prettyName": "Office Project",
+      "databaseName": "ff6a486b8fab45d9981becda8b63d4e3"
+    },
+    {
+      "prettyName": "Office ProjectPlanner",
+      "databaseName": "24c1b08831774b999295fd9fd5944757"
+    },
+    {
+      "prettyName": "Office Publisher",
+      "databaseName": "a3f80a17921e433f9e8f460bcc58d7cf"
+    },
+    {
+      "prettyName": "Office Pulse",
+      "databaseName": "5b3d150d20e9485dae521a9ea70a7650"
+    },
+    {
+      "prettyName": "Office PushNotifications",
+      "databaseName": "cf85c91da6034abc802d0ca22a84c9d4"
+    },
+    {
+      "prettyName": "Office RDX",
+      "databaseName": "989189846669454ab5b34ce9d31dd46b"
+    },
+    {
+      "prettyName": "Office Recent Documents",
+      "databaseName": "470d80212f184b09ac8cfc4f6064f46c"
+    },
+    {
+      "prettyName": "Office Release",
+      "databaseName": "3a5d8522875d4c0cab910ff387cdbfb5"
+    },
+    {
+      "prettyName": "Office Resources",
+      "databaseName": "eb24ada54785433685efe9f034687700"
+    },
+    {
+      "prettyName": "Office SDX",
+      "databaseName": "3ee0b579ec1c40ee92dc70f2f6b3da27"
+    },
+    {
+      "prettyName": "Office SDX Health",
+      "databaseName": "730f3f19bf95436eb33b4be852cef0b1"
+    },
+    {
+      "prettyName": "Office SEO Pages",
+      "databaseName": "434de5194c774095ae6fbc1fb35fca3b"
+    },
+    {
+      "prettyName": "Office SSU",
+      "databaseName": "2253199431de4fd9a1b48a61aa574b23"
+    },
+    {
+      "prettyName": "Office Sandbox",
+      "databaseName": "1cd66059dc1d41f1887e3770ea8ba967"
+    },
+    {
+      "prettyName": "Office Security",
+      "databaseName": "05e0c2fd5fff432bac7a175220223da5"
+    },
+    {
+      "prettyName": "Office ServiceabilityManager",
+      "databaseName": "6e04ead68f85476193d280510e98a915"
+    },
+    {
+      "prettyName": "Office SharePoint ESignature",
+      "databaseName": "fffe6e7b853f4b8f90854e32a453a6fb"
+    },
+    {
+      "prettyName": "Office Shared Online",
+      "databaseName": "d034371e26194a76a187c7108b3837ca"
+    },
+    {
+      "prettyName": "Office Shared Online Data",
+      "databaseName": "4ad8b2b2029e481fb82edb7aac29de59"
+    },
+    {
+      "prettyName": "Office Shared Online Health",
+      "databaseName": "2800319cefba4489867c1ff30d41e7e1"
+    },
+    {
+      "prettyName": "Office SmbPurchase",
+      "databaseName": "f83a4193a5214955a2193ac997385a6c"
+    },
+    {
+      "prettyName": "Office StickyNotes Web SDK",
+      "databaseName": "85ff275685454a7b8d84714195a1e34d"
+    },
+    {
+      "prettyName": "Office Sway",
+      "databaseName": "02e792ea7be340df983242baf914afbb"
+    },
+    {
+      "prettyName": "Office System",
+      "databaseName": "cd836626611c4caaa8fc5b2e728ee81d"
+    },
+    {
+      "prettyName": "Office Taos Hub",
+      "databaseName": "eba120086311400a9b62c4718c0934d3"
+    },
+    {
+      "prettyName": "Office Taos Hub Diagnostic",
+      "databaseName": "6dd53ce2cf7c4e9ca43c3702bdbf521a"
+    },
+    {
+      "prettyName": "Office Taos Hub Mac",
+      "databaseName": "a6a68be612d4419aa0c0ee25559abcfe"
+    },
+    {
+      "prettyName": "Office Taos Hub Windows",
+      "databaseName": "5114ae22ffac440fadfb4f7ed717100f"
+    },
+    {
+      "prettyName": "Office Taos Hub Windows Debug",
+      "databaseName": "4f7daeb13ea74fba888bba2c9c40439f"
+    },
+    {
+      "prettyName": "Office Taos M365Extension",
+      "databaseName": "1ad73c205de94133974c390ca1abac47"
+    },
+    {
+      "prettyName": "Office Taos Shell",
+      "databaseName": "b0c82c6598ad49f3848b1d3dc0d8dd25"
+    },
+    {
+      "prettyName": "Office TargetedMessaging",
+      "databaseName": "2f0a1931898144668b4994b491868b75"
+    },
+    {
+      "prettyName": "Office Telemetry",
+      "databaseName": "f998cc5ba4d448d6a1e8e913ff18be94"
+    },
+    {
+      "prettyName": "Office Telemetry Studio",
+      "databaseName": "b414c277d96f4c1ca5af8265f82b89f3"
+    },
+    {
+      "prettyName": "Office TellMe",
+      "databaseName": "31d9dd3e4c7046a696537586281d7ed1"
+    },
+    {
+      "prettyName": "Office Text",
+      "databaseName": "9c9dcb87a41b41bebea94330a23d828d"
+    },
+    {
+      "prettyName": "Office Translator",
+      "databaseName": "e91bcbbe30e44ab28e2e2bce83d446e5"
+    },
+    {
+      "prettyName": "Office UX",
+      "databaseName": "c4388c977297413bb054bad1acf0ade1"
+    },
+    {
+      "prettyName": "Office UnifiedDevPortals",
+      "databaseName": "24359dd63a0c40358b11485f3e236d4c"
+    },
+    {
+      "prettyName": "Office Uxpp",
+      "databaseName": "771eb6027aa74c4bbec78a064eb2ca56"
+    },
+    {
+      "prettyName": "Office VSBHub",
+      "databaseName": "6950fbd1937a421d9272c9a288ff6c1f"
+    },
+    {
+      "prettyName": "Office Visio",
+      "databaseName": "e056f045a0e64cb0b557a5e04686cbe1"
+    },
+    {
+      "prettyName": "Office Visio Online",
+      "databaseName": "a9b6cb604fe942a89c8671aab85364f6"
+    },
+    {
+      "prettyName": "Office Visio Online Data",
+      "databaseName": "77fd25a525d24b7f9b924307de0cc70f"
+    },
+    {
+      "prettyName": "Office Visio Online Health",
+      "databaseName": "c4999163c49d49c99a1649b404873d24"
+    },
+    {
+      "prettyName": "Office VisioVisual",
+      "databaseName": "def4eb4771e4414a8011d0a98cf75e9a"
+    },
+    {
+      "prettyName": "Office Viva Sales",
+      "databaseName": "5eb39c6d44824819ade46abe0910edcc"
+    },
+    {
+      "prettyName": "Office VivaGoals",
+      "databaseName": "b4a54c4bb98e447d8089cacf43521f16"
+    },
+    {
+      "prettyName": "Office VivaUX",
+      "databaseName": "f70f6bdeb93f4cbfa9b4147764a97a95"
+    },
+    {
+      "prettyName": "Office Voice",
+      "databaseName": "9783945ebc2b468fbb8a2890cdab903b"
+    },
+    {
+      "prettyName": "Office WebAuth",
+      "databaseName": "3cdb0960a1294251b6208f8fd81d4b8e"
+    },
+    {
+      "prettyName": "Office Whiteboard",
+      "databaseName": "431f77bdb09f4376aab6b0138fd9e666"
+    },
+    {
+      "prettyName": "Office Word",
+      "databaseName": "bffd26d9e49b4b7db4cb4df3425812de"
+    },
+    {
+      "prettyName": "Office Word Online",
+      "databaseName": "ff7e2f12a4be407096fc01eeb760eda3"
+    },
+    {
+      "prettyName": "Office Word Online Data",
+      "databaseName": "7e7959aac92e41d6892c69a87259ed58"
+    },
+    {
+      "prettyName": "Office Word Online Health",
+      "databaseName": "e064ef4d9cdb454d9eddb2f7f7a94c83"
+    },
+    {
+      "prettyName": "Office Word Syntex",
+      "databaseName": "0235b5b5552143dbaf789b29e44c5d5c"
+    },
+    {
+      "prettyName": "Office WorkIQCLI",
+      "databaseName": "435843c11e8e4308a8351fbb17494314"
+    },
+    {
+      "prettyName": "Office WorkplaceTab",
+      "databaseName": "8748eec0386f47d0896b6154ba0751b7"
+    },
+    {
+      "prettyName": "Office Writing Assistant",
+      "databaseName": "c5708b44ef844074b2937ea7905dab8c"
+    },
+    {
+      "prettyName": "Office Xaml",
+      "databaseName": "1ee2f5d6b2c94518b99911f4ba4886c5"
+    },
+    {
+      "prettyName": "OfficeProjectTodoServiceDev",
+      "databaseName": "a2dbbd6007fb4461be518d8dec3425f1"
+    },
+    {
+      "prettyName": "OfficeProjectTodoServiceEDog",
+      "databaseName": "0f6b40b838f44b42896d551ab85aabe4"
+    },
+    {
+      "prettyName": "OfficeProjectTodoServiceInt",
+      "databaseName": "1ab013981bcb4d358121523b1df540dd"
+    },
+    {
+      "prettyName": "OfficeProjectTodoServiceProd",
+      "databaseName": "8bf92d090fd640b589ca01728e225b4a"
+    },
+    {
+      "prettyName": "OfficeProjectTodoServiceUSGcc",
+      "databaseName": "4bb33118dc9048718cf33a10f1f705dc"
+    },
+    {
+      "prettyName": "OfficeProjectTodoServiceUSGov",
+      "databaseName": "59f1f2c421a145c4ae24ec4de64ff469"
+    },
+    {
+      "prettyName": "OneNote Apple Clients Production",
+      "databaseName": "0fb12cf1e51746c6b64db8a8b48e9eaf"
+    },
+    {
+      "prettyName": "OneNote Clients Lab",
+      "databaseName": "9c19013453034b8a876e0cb719e79bb3"
+    },
+    {
+      "prettyName": "OneNote Debug",
+      "databaseName": "e0f6a325b34c48f98ef523e1a5be41c1"
+    },
+    {
+      "prettyName": "OneNote EDU Agave",
+      "databaseName": "84e1eadbd76e4c9fbda8366692a9bac9"
+    },
+    {
+      "prettyName": "OneNote Event Documentation Production",
+      "databaseName": "e8251be28c4a4d9fbf53e859c98eafdf"
+    },
+    {
+      "prettyName": "OneNote Notebook Usage Production",
+      "databaseName": "b546af7c1e564792b752591708b50eeb"
+    },
+    {
+      "prettyName": "OneNote Online",
+      "databaseName": "557e9bf96ea04d7e936647baed2279e2"
+    },
+    {
+      "prettyName": "OneNote Web Clipper - production",
+      "databaseName": "c7f3f24bc5f746d7b9d8f8e422fdd8a5"
+    },
+    {
+      "prettyName": "OneNote Web Clipper dev",
+      "databaseName": "d073be677de34d07bb941863ef90b12e"
+    },
+    {
+      "prettyName": "OneNote Web Clipper dogfood",
+      "databaseName": "051fce37978048ffafcdf852f56a9751"
+    },
+    {
+      "prettyName": "OneNote-WebIntegrations",
+      "databaseName": "b412eec27ffd4ac0883bca9f33779920"
+    },
+    {
+      "prettyName": "OneNoteForEDU Apps",
+      "databaseName": "3acb1d28932d44e79a05589cca598257"
+    },
+    {
+      "prettyName": "OneNoteForEDU DVTs",
+      "databaseName": "9706e20cf17c411ba0bca5ba16ffc3a8"
+    },
+    {
+      "prettyName": "PdfPreviewerSharedLibrary",
+      "databaseName": "1da23ef29088440eababab323c676fd9"
+    },
+    {
+      "prettyName": "RAM Server PPE",
+      "databaseName": "33aeaf5b644343e09f984eea428b8e60"
+    },
+    {
+      "prettyName": "RAM Server Prod",
+      "databaseName": "4cf39259d04e414b8464fb6ad28c7d6f"
+    },
+    {
+      "prettyName": "ReliabilityAnalysisPreprocessing",
+      "databaseName": "cef6c6c7ac6645f8a0ee583e6d199eb3"
+    },
+    {
+      "prettyName": "Send to OneNote from Outlook Agave",
+      "databaseName": "99231001cd734748bafd354200e1869a"
+    },
+    {
+      "prettyName": "Sig PPE",
+      "databaseName": "fa7c719cf50b42ad833b86d4e10a5880"
+    },
+    {
+      "prettyName": "Sig PROD",
+      "databaseName": "c875afd937d3482a911db2696e05a8af"
+    },
+    {
+      "prettyName": "Sig Test",
+      "databaseName": "79716214f1614d66a2907a3fd0dfa491"
+    },
+    {
+      "prettyName": "Sticky Notes",
+      "databaseName": "15cbbc93e90a4d56bf8d9a29305b8981"
+    },
+    {
+      "prettyName": "Sticky Notes Web SDK",
+      "databaseName": "8a02290561af4882b508c99fac9fb842"
+    },
+    {
+      "prettyName": "Student Tools Production",
+      "databaseName": "9a885e3f295e4516bc02b1f9797f8ea0"
+    },
+    {
+      "prettyName": "Teacher Analytics INT",
+      "databaseName": "dbedab1349b54831a5325d5f42ac6b05"
+    },
+    {
+      "prettyName": "Teacher Analytics PPE",
+      "databaseName": "140322a8fe9a4663878cbeeff2382c74"
+    },
+    {
+      "prettyName": "TeamsNotesIntegration",
+      "databaseName": "0e785912488844658307d156e37294e4"
+    },
+    {
+      "prettyName": "TestSelection",
+      "databaseName": "72cbd93a9f1e4d86a02e607ac181ab93"
+    },
+    {
+      "prettyName": "To-Do Analytics",
+      "databaseName": "54f951f237d74888af490174a7b46a0b"
+    },
+    {
+      "prettyName": "Toolshed",
+      "databaseName": "22e8d4c541c1408583b203dd0d62f392"
+    },
+    {
+      "prettyName": "reflect UI",
+      "databaseName": "ff9d9746f9a74a54aad1a4f52173db71"
+    }
+  ]
+}

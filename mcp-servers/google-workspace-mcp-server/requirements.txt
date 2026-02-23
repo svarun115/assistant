@@ -1,0 +1,21 @@
+# Core MCP
+mcp
+
+# Google APIs
+google-api-python-client
+google-auth-httplib2
+google-auth-oauthlib
+
+# Date parsing
+dateparser
+
+# Gmail extras
+beautifulsoup4
+pdfplumber
+
+# HTTP mode (optional — only needed for --http)
+fastapi
+uvicorn
+
+# Env
+python-dotenv

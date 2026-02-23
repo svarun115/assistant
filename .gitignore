@@ -1,17 +1,22 @@
-# Secrets — never commit these
+# ─── Secrets — never commit these ────────────────────────────────────────────
 .env.production
 .env.local
 
-# MCP server credential files (real values — use .env.example for templates)
+# MCP server local credential files
 mcp-servers/**/.env
 mcp-servers/**/.env.development
 mcp-servers/**/.env.production
 mcp-servers/**/.env.test
 
-# OAuth tokens
+# Google OAuth tokens (local auth files — copied to VM via scp)
 tokens/
+mcp-servers/google-workspace-mcp-server/token.json
+mcp-servers/google-workspace-mcp-server/credentials.json
 
-# Python
+# Personal user data (copied to VM via scp, like .env.production)
+.claude/data/
+
+# ─── Python ───────────────────────────────────────────────────────────────────
 __pycache__/
 *.pyc
 *.pyo
@@ -21,24 +26,23 @@ venv/
 dist/
 build/
 
-# Node
+# ─── Node ─────────────────────────────────────────────────────────────────────
 node_modules/
-dist/
 
-# SQLite state (local dev only)
+# ─── SQLite state (local dev only — production uses PostgreSQL) ───────────────
 *.db
 *.db-shm
 *.db-wal
 
-# Logs
+# ─── Logs ─────────────────────────────────────────────────────────────────────
 logs/
 llm_logs/
 query_logs/
 
-# Test artifacts
+# ─── Test / build artifacts ───────────────────────────────────────────────────
 backups_test/
 chroma_db/
 
-# OS
+# ─── OS ───────────────────────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
