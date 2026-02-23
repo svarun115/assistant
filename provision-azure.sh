@@ -34,7 +34,7 @@ SSH_KEY_PATH="${HOME}/.ssh/id_rsa"
 REPO="https://github.com/svarun115/assistant"
 
 # Personal Claude config (private — skills, agents, plans)
-CLAUDE_REPO="https://github.com/svarun115/claude-personal"
+CLAUDE_REPO="https://github.com/svarun115/claude-config"
 
 # MCP servers (each has its own repo)
 MCP_REPOS=(
