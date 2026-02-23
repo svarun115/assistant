@@ -62,6 +62,10 @@ case "${1:-deploy}" in
     echo "=== Rolling Update ==="
     cd "$REPO_DIR"
     git pull
+    # Pull each MCP server repo
+    for dir in mcp-servers/*/; do
+      [[ -d "$REPO_DIR/$dir/.git" ]] && echo "  Pulling $dir..." && git -C "$REPO_DIR/$dir" pull
+    done
     $COMPOSE build --parallel
     $COMPOSE up -d
     $COMPOSE ps

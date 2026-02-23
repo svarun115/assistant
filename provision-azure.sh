@@ -27,12 +27,19 @@ VM_SIZE="Standard_B2ms"                 # 2 vCPU, 8GB, ~$55/month
 VM_USER="ubuntu"
 SSH_KEY_PATH="${HOME}/.ssh/id_rsa"
 
-# Your GitHub repo URL (HTTPS). Set after pushing: https://github.com/YOU/assistant
-REPO_URL=""
+# GitHub repos (all already exist on GitHub)
+INFRA_REPO="https://github.com/svarun115/assistant-infra"
+MCP_REPOS=(
+  "mcp-servers/db-mcp-server|https://github.com/svarun115/journal-db-mcp-server.git"
+  "mcp-servers/garmin-mcp-server|https://github.com/svarun115/garmin-mcp-server.git"
+  "mcp-servers/google-workspace-mcp-server|https://github.com/svarun115/google-workspace-mcp-server.git"
+  "mcp-servers/googleplaces-mcp-server|https://github.com/svarun115/googleplaces-mcp-server.git"
+  "mcp-servers/splitwise-mcp-server|https://github.com/svarun115/splitwise-mcp-server.git"
+)
 
 # Domain for HTTPS. Options:
 #   a) Your own domain: "mcp.yourdomain.com" (set DNS A record to VM public IP)
-#   b) Azure public DNS: leave empty — script auto-uses VM's *.cloudapp.azure.com FQDN
+#   b) Leave empty — script auto-uses VM's *.cloudapp.azure.com FQDN (no DNS needed)
 DOMAIN=""
 
 # ─── Helpers ───────────────────────────────────────────────────────────────
@@ -164,30 +171,19 @@ deploy() {
   wait_for_cloud_init "$ip"
 
   echo ""
-  echo "[5/6] Copying files to VM..."
+  echo "[5/6] Cloning repos onto VM..."
 
-  # Clone repo (if REPO_URL set) or rsync the project directory
-  if [[ -n "$REPO_URL" ]]; then
-    echo "  Cloning $REPO_URL..."
-    ssh_run "$ip" "git clone '$REPO_URL' ~/assistant || git -C ~/assistant pull"
-  else
-    echo "  No REPO_URL set — syncing local directory via rsync..."
-    echo "  (Set REPO_URL at the top of this script after pushing to GitHub)"
-    rsync -az --progress \
-      --exclude='.git' \
-      --exclude='*.db' \
-      --exclude='__pycache__' \
-      --exclude='node_modules' \
-      --exclude='.venv' \
-      --exclude='venv' \
-      --exclude='.env.production' \
-      --exclude='tokens/' \
-      --exclude='llm_logs/' \
-      --exclude='logs/' \
-      -e "ssh $SSH_OPTS -i $SSH_KEY_PATH" \
-      "$SCRIPT_DIR/" \
-      "$VM_USER@$ip:~/assistant/"
-  fi
+  # Clone infra repo (docker-compose, deploy.sh, nginx, etc.)
+  ssh_run "$ip" "git clone '$INFRA_REPO' ~/assistant 2>/dev/null || git -C ~/assistant pull"
+
+  # Clone each MCP server into the expected subdirectory
+  ssh_run "$ip" "mkdir -p ~/assistant/mcp-servers"
+  for entry in "${MCP_REPOS[@]}"; do
+    subdir="${entry%%|*}"
+    url="${entry##*|}"
+    echo "  Cloning $subdir..."
+    ssh_run "$ip" "git clone '$url' ~/assistant/$subdir 2>/dev/null || git -C ~/assistant/$subdir pull"
+  done
 
   # Copy secrets (never in git)
   echo "  Copying .env.production..."
