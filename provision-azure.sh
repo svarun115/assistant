@@ -172,21 +172,34 @@ deploy() {
   local auth_repo; auth_repo="${REPO/https:\/\//https:\/\/$GITHUB_TOKEN@}"
   local auth_claude; auth_claude="${CLAUDE_REPO/https:\/\//https:\/\/$GITHUB_TOKEN@}"
 
+  # Helper: clone-or-pull that handles leftover non-git directories
+  clone_or_pull() {
+    local url="$1" dest="$2"
+    ssh_run "$ip" "
+      if [ -d '$dest/.git' ]; then
+        echo 'pulling $dest'; git -C '$dest' pull
+      else
+        rm -rf '$dest'
+        git clone '$url' '$dest'
+      fi
+    "
+  }
+
   # Framework repo (private)
   echo "  Cloning framework..."
-  ssh_run "$ip" "git clone '$auth_repo' ~/assistant || git -C ~/assistant pull"
+  clone_or_pull "$auth_repo" "~/assistant"
 
   # MCP servers (public — no token needed)
   ssh_run "$ip" "mkdir -p ~/assistant/mcp-servers"
   for entry in "${MCP_REPOS[@]}"; do
     subdir="${entry%%|*}"; url="${entry##*|}"
     echo "  Cloning $subdir..."
-    ssh_run "$ip" "git clone '$url' ~/assistant/$subdir || git -C ~/assistant/$subdir pull"
+    clone_or_pull "$url" "~/assistant/$subdir"
   done
 
   # Personal Claude config (private)
   echo "  Cloning .claude (skills, agents, plans)..."
-  ssh_run "$ip" "git clone '$auth_claude' ~/assistant/.claude || git -C ~/assistant/.claude pull"
+  clone_or_pull "$auth_claude" "~/assistant/.claude"
 
   # Copy secrets (gitignored — never in any repo)
   echo "  Copying .env.production..."
