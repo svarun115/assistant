@@ -224,6 +224,30 @@ deploy() {
     "$SCRIPT_DIR/.claude/data/" \
     "$VM_USER@$ip:$RDIR/.claude/"
 
+  echo "  Copying Garmin auth tokens into Docker volume..."
+  # Find local garmin tokens
+  GARMIN_TOKEN_SRC=""
+  for candidate in "$HOME/.garminconnect" "$HOME/.garth"; do
+    [[ -f "$candidate/oauth1_token.json" ]] && GARMIN_TOKEN_SRC="$candidate" && break
+  done
+  if [[ -n "$GARMIN_TOKEN_SRC" ]]; then
+    scp $SSH_OPTS -i "$SSH_KEY_PATH" \
+      "$GARMIN_TOKEN_SRC/oauth1_token.json" \
+      "$GARMIN_TOKEN_SRC/oauth2_token.json" \
+      "$VM_USER@$ip:/tmp/"
+    # Docker Compose prefixes volume with project name — use assistant_garmin-tokens
+    ssh_run "$ip" "
+      docker run --rm \
+        -v assistant_garmin-tokens:/dst \
+        -v /tmp:/src \
+        python:3.11-slim \
+        sh -c 'cp /src/oauth1_token.json /dst/ && cp /src/oauth2_token.json /dst/'
+    "
+    echo "  ✓ Garmin tokens copied to assistant_garmin-tokens volume"
+  else
+    echo "  ⚠ Garmin tokens not found locally — run initial auth manually after deploy"
+  fi
+
   echo "  ✓ All files in place"
 
   echo ""
