@@ -15,13 +15,6 @@ version: "3.9"
 # Usage:
 #   docker compose --env-file .env.production up -d
 #   docker compose --env-file .env.production logs -f garmin
-#
-# Notes:
-# - Ports are bound to 127.0.0.1 only — Nginx is the only external entry point.
-# - Garmin tokens persist in the 'garmin-tokens' named volume.
-# - Google OAuth tokens are bind-mounted from ./tokens/google/ (gitignored).
-# - The assistant-server (gateway/orchestrator) is NOT deployed here.
-#   It still runs locally via Claude Code. Add it back in Phase 1g when ready.
 
 services:
 
@@ -36,10 +29,10 @@ services:
       APP_ENV: production
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-sf", "http://localhost:3333/health"]
+      test: ["CMD-SHELL", "curl -sf http://localhost:3333/mcp || curl -sf http://localhost:3333/ || exit 1"]
       interval: 30s
       timeout: 10s
-      start_period: 15s
+      start_period: 20s
       retries: 3
 
   garmin:
@@ -55,7 +48,7 @@ services:
       - garmin-tokens:/app/.garth
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-sf", "http://localhost:5555/health"]
+      test: ["CMD-SHELL", "curl -sf http://localhost:5555/mcp || curl -sf http://localhost:5555/ || exit 1"]
       interval: 60s
       timeout: 15s
       start_period: 30s
@@ -70,15 +63,14 @@ services:
     env_file: .env.production
     volumes:
       # token.json is refreshed at runtime (rw). credentials.json is static (ro).
-      # Copy both to tokens/google/ on the VM before first deploy.
       - ./tokens/google/token.json:/app/token.json
       - ./tokens/google/credentials.json:/app/credentials.json:ro
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-sf", "http://localhost:3000/health"]
+      test: ["CMD-SHELL", "curl -sf http://localhost:3000/mcp || curl -sf http://localhost:3000/ || exit 1"]
       interval: 30s
       timeout: 10s
-      start_period: 15s
+      start_period: 20s
       retries: 3
 
   google-places:
@@ -90,10 +82,10 @@ services:
     env_file: .env.production
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-sf", "http://localhost:1111/health"]
+      test: ["CMD-SHELL", "curl -sf http://localhost:1111/mcp || curl -sf http://localhost:1111/ || exit 1"]
       interval: 30s
       timeout: 10s
-      start_period: 10s
+      start_period: 15s
       retries: 3
 
   splitwise:
@@ -105,14 +97,13 @@ services:
     env_file: .env.production
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-sf", "http://localhost:4000/health"]
+      test: ["CMD-SHELL", "curl -sf http://localhost:4000/mcp || curl -sf http://localhost:4000/ || exit 1"]
       interval: 30s
       timeout: 10s
-      start_period: 10s
+      start_period: 15s
       retries: 3
 
 volumes:
   garmin-tokens:
     # Persists garth session tokens across container restarts.
-    # First deploy: authenticate once with GARMIN_EMAIL/PASSWORD set in .env.production,
-    # then remove those vars — tokens refresh automatically thereafter.
+    # Initial tokens are copied from local ~/.garminconnect/ via the provision script.
