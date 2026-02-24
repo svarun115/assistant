@@ -164,20 +164,29 @@ deploy() {
   echo ""
   echo "[5/6] Cloning repos and copying secrets..."
 
-  # Framework repo
-  ssh_run "$ip" "git clone '$REPO' ~/assistant 2>/dev/null || git -C ~/assistant pull"
+  # Read GitHub token from local .env.production for authenticating private repos
+  GITHUB_TOKEN=$(grep -E '^GITHUB_TOKEN=' "$SCRIPT_DIR/.env.production" | cut -d= -f2-)
+  [[ -n "$GITHUB_TOKEN" ]] || { echo "ERROR: GITHUB_TOKEN missing from .env.production"; exit 1; }
 
-  # MCP servers (each into its own subdirectory)
+  # Build authenticated URLs for private repos
+  local auth_repo; auth_repo="${REPO/https:\/\//https:\/\/$GITHUB_TOKEN@}"
+  local auth_claude; auth_claude="${CLAUDE_REPO/https:\/\//https:\/\/$GITHUB_TOKEN@}"
+
+  # Framework repo (private)
+  echo "  Cloning framework..."
+  ssh_run "$ip" "git clone '$auth_repo' ~/assistant || git -C ~/assistant pull"
+
+  # MCP servers (public — no token needed)
   ssh_run "$ip" "mkdir -p ~/assistant/mcp-servers"
   for entry in "${MCP_REPOS[@]}"; do
     subdir="${entry%%|*}"; url="${entry##*|}"
     echo "  Cloning $subdir..."
-    ssh_run "$ip" "git clone '$url' ~/assistant/$subdir 2>/dev/null || git -C ~/assistant/$subdir pull"
+    ssh_run "$ip" "git clone '$url' ~/assistant/$subdir || git -C ~/assistant/$subdir pull"
   done
 
-  # Personal Claude config
+  # Personal Claude config (private)
   echo "  Cloning .claude (skills, agents, plans)..."
-  ssh_run "$ip" "git clone '$CLAUDE_REPO' ~/assistant/.claude 2>/dev/null || git -C ~/assistant/.claude pull"
+  ssh_run "$ip" "git clone '$auth_claude' ~/assistant/.claude || git -C ~/assistant/.claude pull"
 
   # Copy secrets (gitignored — never in any repo)
   echo "  Copying .env.production..."
