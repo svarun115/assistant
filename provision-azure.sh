@@ -168,69 +168,72 @@ deploy() {
   GITHUB_TOKEN=$(grep -E '^GITHUB_TOKEN=' "$SCRIPT_DIR/.env.production" | cut -d= -f2-)
   [[ -n "$GITHUB_TOKEN" ]] || { echo "ERROR: GITHUB_TOKEN missing from .env.production"; exit 1; }
 
-  # Build authenticated URLs for private repos
+  # Build authenticated URLs (token used for all repos — avoids non-interactive TTY issues)
   local auth_repo; auth_repo="${REPO/https:\/\//https:\/\/$GITHUB_TOKEN@}"
   local auth_claude; auth_claude="${CLAUDE_REPO/https:\/\//https:\/\/$GITHUB_TOKEN@}"
 
-  # Helper: clone-or-pull that handles leftover non-git directories
+  # Absolute path on VM — avoids ~ expansion issues inside single-quoted SSH strings
+  local RDIR="/home/$VM_USER/assistant"
+
+  # Helper: clone-or-pull using absolute paths
   clone_or_pull() {
     local url="$1" dest="$2"
     ssh_run "$ip" "
-      if [ -d '$dest/.git' ]; then
-        echo 'pulling $dest'; git -C '$dest' pull
+      if [ -d $dest/.git ]; then
+        echo pulling $dest; git -C $dest pull
       else
-        rm -rf '$dest'
-        git clone '$url' '$dest'
+        rm -rf $dest
+        git clone $url $dest
       fi
     "
   }
 
-  # Framework repo (private)
+  # Framework repo
   echo "  Cloning framework..."
-  clone_or_pull "$auth_repo" "~/assistant"
+  clone_or_pull "$auth_repo" "$RDIR"
 
-  # MCP servers (inject token for non-interactive SSH environment)
-  ssh_run "$ip" "mkdir -p ~/assistant/mcp-servers"
+  # MCP servers
+  ssh_run "$ip" "mkdir -p $RDIR/mcp-servers"
   for entry in "${MCP_REPOS[@]}"; do
     subdir="${entry%%|*}"; url="${entry##*|}"
     auth_url="${url/https:\/\//https:\/\/$GITHUB_TOKEN@}"
     echo "  Cloning $subdir..."
-    clone_or_pull "$auth_url" "~/assistant/$subdir"
+    clone_or_pull "$auth_url" "$RDIR/$subdir"
   done
 
-  # Personal Claude config (private)
+  # Personal Claude config
   echo "  Cloning .claude (skills, agents, plans)..."
-  clone_or_pull "$auth_claude" "~/assistant/.claude"
+  clone_or_pull "$auth_claude" "$RDIR/.claude"
 
   # Copy secrets (gitignored — never in any repo)
   echo "  Copying .env.production..."
   scp $SSH_OPTS -i "$SSH_KEY_PATH" \
     "$SCRIPT_DIR/.env.production" \
-    "$VM_USER@$ip:~/assistant/.env.production"
+    "$VM_USER@$ip:$RDIR/.env.production"
 
   echo "  Copying Google OAuth tokens..."
-  ssh_run "$ip" "mkdir -p ~/assistant/tokens/google"
+  ssh_run "$ip" "mkdir -p $RDIR/tokens/google"
   scp $SSH_OPTS -i "$SSH_KEY_PATH" \
     "$GOOGLE_TOKEN_SRC/token.json" \
     "$GOOGLE_TOKEN_SRC/credentials.json" \
-    "$VM_USER@$ip:~/assistant/tokens/google/"
+    "$VM_USER@$ip:$RDIR/tokens/google/"
 
   echo "  Copying user context data (.claude/data/)..."
-  ssh_run "$ip" "mkdir -p ~/assistant/.claude/data"
+  ssh_run "$ip" "mkdir -p $RDIR/.claude/data"
   scp $SSH_OPTS -i "$SSH_KEY_PATH" -r \
     "$SCRIPT_DIR/.claude/data/" \
-    "$VM_USER@$ip:~/assistant/.claude/"
+    "$VM_USER@$ip:$RDIR/.claude/"
 
   echo "  ✓ All files in place"
 
   echo ""
   echo "[6/6] Starting containers..."
-  ssh_run "$ip" "cd ~/assistant && chmod +x deploy.sh && ./deploy.sh deploy"
+  ssh_run "$ip" "cd $RDIR && chmod +x deploy.sh && ./deploy.sh deploy"
 
   local effective_domain="${DOMAIN:-$VM_NAME.$LOCATION.cloudapp.azure.com}"
   echo ""
   echo "  Configuring Nginx + TLS for $effective_domain..."
-  ssh_run "$ip" "cd ~/assistant && ./deploy.sh setup-nginx '$effective_domain'"
+  ssh_run "$ip" "cd $RDIR && ./deploy.sh setup-nginx '$effective_domain'"
 
   MCP_API_KEY=$(grep -E '^MCP_API_KEY=' "$SCRIPT_DIR/.env.production" | cut -d= -f2-)
   echo ""
