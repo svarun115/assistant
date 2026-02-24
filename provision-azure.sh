@@ -189,12 +189,13 @@ deploy() {
   echo "  Cloning framework..."
   clone_or_pull "$auth_repo" "~/assistant"
 
-  # MCP servers (public — no token needed)
+  # MCP servers (inject token for non-interactive SSH environment)
   ssh_run "$ip" "mkdir -p ~/assistant/mcp-servers"
   for entry in "${MCP_REPOS[@]}"; do
     subdir="${entry%%|*}"; url="${entry##*|}"
+    auth_url="${url/https:\/\//https:\/\/$GITHUB_TOKEN@}"
     echo "  Cloning $subdir..."
-    clone_or_pull "$url" "~/assistant/$subdir"
+    clone_or_pull "$auth_url" "~/assistant/$subdir"
   done
 
   # Personal Claude config (private)
