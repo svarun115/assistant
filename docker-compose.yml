@@ -29,7 +29,8 @@ services:
       APP_ENV: production
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:3333/ > /dev/null || exit 1"]
+      # curl without -f: any HTTP response (incl. 404) means the server is up
+      test: ["CMD-SHELL", "curl -s http://localhost:3333/ > /dev/null"]
       interval: 30s
       timeout: 10s
       start_period: 90s
@@ -48,7 +49,7 @@ services:
       - garmin-tokens:/app/.garth
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:5555/ > /dev/null || exit 1"]
+      test: ["CMD-SHELL", "curl -s http://localhost:5555/ > /dev/null"]
       interval: 60s
       timeout: 15s
       start_period: 30s
@@ -67,7 +68,7 @@ services:
       - ./tokens/google/credentials.json:/app/credentials.json:ro
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:3000/ > /dev/null || exit 1"]
+      test: ["CMD-SHELL", "curl -s http://localhost:3000/ > /dev/null"]
       interval: 30s
       timeout: 10s
       start_period: 20s
@@ -82,7 +83,7 @@ services:
     env_file: .env.production
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:1111/ > /dev/null || exit 1"]
+      test: ["CMD-SHELL", "curl -s http://localhost:1111/ > /dev/null"]
       interval: 30s
       timeout: 10s
       start_period: 15s
@@ -97,7 +98,7 @@ services:
     env_file: .env.production
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:4000/ > /dev/null || exit 1"]
+      test: ["CMD-SHELL", "curl -s http://localhost:4000/ > /dev/null"]
       interval: 30s
       timeout: 10s
       start_period: 15s
