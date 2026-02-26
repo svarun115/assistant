@@ -29,7 +29,7 @@ services:
       APP_ENV: production
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:3333/mcp || curl -sf http://localhost:3333/ || exit 1"]
+      test: ["CMD-SHELL", "nc -z localhost 3333 || exit 1"]
       interval: 30s
       timeout: 10s
       start_period: 20s
@@ -48,7 +48,7 @@ services:
       - garmin-tokens:/app/.garth
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:5555/mcp || curl -sf http://localhost:5555/ || exit 1"]
+      test: ["CMD-SHELL", "nc -z localhost 5555 || exit 1"]
       interval: 60s
       timeout: 15s
       start_period: 30s
@@ -67,7 +67,7 @@ services:
       - ./tokens/google/credentials.json:/app/credentials.json:ro
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:3000/mcp || curl -sf http://localhost:3000/ || exit 1"]
+      test: ["CMD-SHELL", "nc -z localhost 3000 || exit 1"]
       interval: 30s
       timeout: 10s
       start_period: 20s
@@ -82,7 +82,7 @@ services:
     env_file: .env.production
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:1111/mcp || curl -sf http://localhost:1111/ || exit 1"]
+      test: ["CMD-SHELL", "nc -z localhost 1111 || exit 1"]
       interval: 30s
       timeout: 10s
       start_period: 15s
@@ -97,7 +97,7 @@ services:
     env_file: .env.production
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:4000/mcp || curl -sf http://localhost:4000/ || exit 1"]
+      test: ["CMD-SHELL", "nc -z localhost 4000 || exit 1"]
       interval: 30s
       timeout: 10s
       start_period: 15s
