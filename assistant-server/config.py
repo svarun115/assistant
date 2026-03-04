@@ -129,7 +129,7 @@ DEFAULT_MCP_SERVERS: list[MCPServerConfig] = [
 DEFAULT_LLM_CONFIGS: dict[LLMProvider, LLMConfig] = {
     LLMProvider.CLAUDE: LLMConfig(
         provider=LLMProvider.CLAUDE,
-        model="claude-sonnet-4-20250514",
+        model="claude-sonnet-4-6",
         api_key=os.getenv("ANTHROPIC_API_KEY"),
     ),
     LLMProvider.OPENAI: LLMConfig(
@@ -148,7 +148,7 @@ DEFAULT_LLM_CONFIGS: dict[LLMProvider, LLMConfig] = {
 
 # Dedicated lightweight LLM for distillation/summarization tasks
 # Uses a cheap, fast model to summarize tool results without affecting main conversation
-# Options: "gpt-5-nano", "gpt-4o-mini", "local-rules" (rule-based, no LLM)
+# Options: "gpt-5-nano", "gpt-5-mini", "local-rules" (rule-based, no LLM)
 DISTILLATION_LLM_CONFIG = LLMConfig(
     provider=LLMProvider.OPENAI,
     model="gpt-5-nano",  # Cheapest option - $0.05/M input, $0.40/M output
@@ -170,12 +170,12 @@ DISTILLATION_MODELS = [
         "pricing": {"input": 0.05, "output": 0.40}
     },
     {
-        "id": "gpt-4o-mini",
-        "name": "GPT-4o Mini",
-        "description": "Better quality (~2x cost, $0.15/$0.60 per 1M)",
+        "id": "gpt-5-mini",
+        "name": "GPT-5 Mini",
+        "description": "Better quality (~5x cost, $0.25/$2.00 per 1M)",
         "provider": "openai",
-        "model": "gpt-4o-mini",
-        "pricing": {"input": 0.15, "output": 0.60}
+        "model": "gpt-5-mini",
+        "pricing": {"input": 0.25, "output": 2.00}
     },
     {
         "id": "local-rules",

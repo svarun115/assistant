@@ -194,7 +194,7 @@ class DistillationHelper:
         Change the distillation model at runtime.
         
         Args:
-            model_id: One of 'gpt-5-nano', 'gpt-4o-mini', or 'local-rules'
+            model_id: One of 'gpt-5-nano', 'gpt-5-mini', or 'local-rules'
             
         Returns:
             dict with status and new model info
@@ -464,7 +464,9 @@ Provide a concise summary (2-4 sentences):"""
             "gpt-5-nano": {"input": 0.05, "output": 0.40},
             "gpt-4.1-nano": {"input": 0.10, "output": 0.40},
             "gpt-5-mini": {"input": 0.25, "output": 2.00},
-            "gpt-4o-mini": {"input": 0.15, "output": 0.60},
+            "gpt-4o-mini": {"input": 0.15, "output": 0.60},  # legacy
+            "claude-sonnet-4-6": {"input": 3.0, "output": 15.0},
+            "claude-haiku-4-5-20251001": {"input": 1.0, "output": 5.0},
         }
         return pricing_map.get(model, {"input": 0.10, "output": 0.50})
     

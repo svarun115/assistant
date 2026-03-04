@@ -79,8 +79,9 @@ def _get_last_turn_usage(state: Optional[dict], model_name: str = None) -> dict:
 
 MODEL_PRICING = {
     "gpt-5-nano": {"input": 0.05, "output": 0.40},
-    "gpt-4o-mini": {"input": 0.15, "output": 0.60},
-    "claude-sonnet-4-20250514": {"input": 3.0, "output": 15.0},
+    "gpt-5-mini": {"input": 0.25, "output": 2.00},
+    "claude-sonnet-4-6": {"input": 3.0, "output": 15.0},
+    "claude-haiku-4-5-20251001": {"input": 1.0, "output": 5.0},
     "mock-default": {"input": 0, "output": 0},
 }
 
@@ -609,20 +610,32 @@ async def get_models():
     return {
         "models": [
             {
-                "provider": "openai", 
-                "name": "GPT 5 Nano", 
+                "provider": "claude",
+                "name": "Claude Sonnet 4.6",
+                "model": "claude-sonnet-4-6",
+                "pricing": MODEL_PRICING.get("claude-sonnet-4-6", {"input": 0, "output": 0})
+            },
+            {
+                "provider": "claude",
+                "name": "Claude Haiku 4.5",
+                "model": "claude-haiku-4-5-20251001",
+                "pricing": MODEL_PRICING.get("claude-haiku-4-5-20251001", {"input": 0, "output": 0})
+            },
+            {
+                "provider": "openai",
+                "name": "GPT 5 Nano",
                 "model": "gpt-5-nano",
                 "pricing": MODEL_PRICING.get("gpt-5-nano", {"input": 0, "output": 0})
             },
             {
-                "provider": "openai", 
-                "name": "GPT 4o Mini", 
-                "model": "gpt-4o-mini",
-                "pricing": MODEL_PRICING.get("gpt-4o-mini", {"input": 0, "output": 0})
+                "provider": "openai",
+                "name": "GPT 5 Mini",
+                "model": "gpt-5-mini",
+                "pricing": MODEL_PRICING.get("gpt-5-mini", {"input": 0, "output": 0})
             },
             {
-                "provider": "mock", 
-                "name": "Mock", 
+                "provider": "mock",
+                "name": "Mock",
                 "model": "mock-default",
                 "pricing": MODEL_PRICING.get("mock-default", {"input": 0, "output": 0})
             },

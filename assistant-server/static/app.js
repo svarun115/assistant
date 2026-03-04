@@ -111,11 +111,11 @@ async function fetchModels() {
         console.error('Failed to fetch models:', error);
         // Fallback to defaults
         MODELS = {
-            'Claude': { provider: 'claude', model: 'claude-sonnet-4-20250514' },
+            'Claude Sonnet 4.6': { provider: 'claude', model: 'claude-sonnet-4-6' },
             'Mock': { provider: 'mock', model: 'mock-default' },
         };
         TOKEN_PRICING = {
-            'claude-sonnet-4-20250514': { input: 3, output: 15 },
+            'claude-sonnet-4-6': { input: 3, output: 15 },
             'mock-default': { input: 0, output: 0 },
         };
     }
@@ -1177,7 +1177,7 @@ async function fetchDistillationModels() {
         console.error('Failed to fetch distillation models:', error);
         DISTILLATION_MODELS = {
             'GPT-5 Nano': { id: 'gpt-5-nano' },
-            'GPT-4o Mini': { id: 'gpt-4o-mini' },
+            'GPT-5 Mini': { id: 'gpt-5-mini' },
             'Local Rules': { id: 'local-rules' }
         };
     }

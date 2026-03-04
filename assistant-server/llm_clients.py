@@ -186,6 +186,97 @@ class AnthropicClient(BaseLLMClient):
             tool_call_id=tool_call_id
         )
 
+    async def stream_chat(
+        self,
+        messages: list[Message],
+        tools: list[dict[str, Any]],
+        system_prompt: Optional[str] = None
+    ):
+        """Stream chat response from Anthropic Claude."""
+        # Convert messages to Anthropic format (same as non-streaming chat)
+        anthropic_messages = []
+        for msg in messages:
+            if msg.role == "tool":
+                anthropic_messages.append({
+                    "role": "user",
+                    "content": [{
+                        "type": "tool_result",
+                        "tool_use_id": msg.tool_call_id,
+                        "content": msg.content
+                    }]
+                })
+            elif msg.tool_calls:
+                content = []
+                if msg.content:
+                    content.append({"type": "text", "text": msg.content})
+                for tc in msg.tool_calls:
+                    content.append({
+                        "type": "tool_use",
+                        "id": tc.id,
+                        "name": tc.name,
+                        "input": tc.arguments
+                    })
+                anthropic_messages.append({"role": "assistant", "content": content})
+            else:
+                anthropic_messages.append({
+                    "role": msg.role,
+                    "content": msg.content
+                })
+
+        # Build kwargs
+        kwargs = {
+            "model": self.config.model,
+            "max_tokens": self.config.max_tokens,
+            "system": system_prompt or "",
+            "messages": anthropic_messages,
+        }
+        if tools:
+            kwargs["tools"] = tools
+
+        # Accumulate response while streaming
+        content = ""
+        tool_calls = []
+        current_tool = None  # Track tool_use block being built
+
+        async with self._client.messages.stream(**kwargs) as stream:
+            async for event in stream:
+                if event.type == "text":
+                    content += event.text
+                    yield {"type": "content", "content": event.text}
+                elif event.type == "input_json":
+                    # Tool arguments streaming — accumulate silently
+                    pass
+                elif event.type == "content_block_stop":
+                    # A content block finished — check if it's a tool_use block
+                    block = event.content_block
+                    if hasattr(block, "type") and block.type == "tool_use":
+                        tool_calls.append(ToolCall(
+                            id=block.id,
+                            name=block.name,
+                            arguments=block.input
+                        ))
+
+            # Get final message for usage stats
+            final_message = await stream.get_final_message()
+
+        usage = {
+            "input_tokens": final_message.usage.input_tokens,
+            "output_tokens": final_message.usage.output_tokens,
+        }
+
+        logger.info(
+            f"Anthropic stream complete: stop_reason={final_message.stop_reason}, "
+            f"content_len={len(content)}, tool_calls={len(tool_calls)}, usage={usage}"
+        )
+
+        response = LLMResponse(
+            content=content,
+            tool_calls=tool_calls,
+            stop_reason="tool_use" if final_message.stop_reason == "tool_use" else "end_turn",
+            usage=usage,
+        )
+        yield {"type": "done", "response": response}
+
 
 class OpenAIClient(BaseLLMClient):
     """Client for OpenAI's API."""
