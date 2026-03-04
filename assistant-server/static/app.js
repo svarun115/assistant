@@ -2394,7 +2394,7 @@ function renderTurnGroup(group) {
                     ${requests}req • ${responses}res${tools > 0 ? ` • ${tools}🔧` : ''}
                     ${hasError ? ' • ❌' : ''}
                     <button class="log-copy-btn turn-copy-btn" onclick="copyTurnLogs(event, ${group.turn})" title="Copy full turn">
-                        <i data-lucide="clipboard-list" class="log-copy-icon"></i>
+                        <i data-lucide="copy" class="log-copy-icon"></i>
                     </button>
                 </div>
             </div>

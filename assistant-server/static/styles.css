@@ -2425,7 +2425,8 @@ body {
     align-items: center;
 }
 
-.log-entry:hover .log-copy-btn {
+.log-entry:hover .log-copy-btn,
+.turn-header:hover .log-copy-btn {
     opacity: 1;
 }
 
