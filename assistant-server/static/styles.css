@@ -1595,6 +1595,35 @@ body {
     height: 20px;
 }
 
+/* Stop button - appears when thinking, hides send button */
+.stop-btn {
+    display: none;
+    width: 44px;
+    height: 44px;
+    background: var(--error, #e53e3e);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.stop-btn.visible {
+    display: flex;
+}
+
+.stop-btn:hover {
+    background: #c53030;
+    transform: scale(1.05);
+}
+
+.stop-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
 /* MCP Servers Pane (collapsible right pane) */
 .mcp-pane {
     width: 280px;

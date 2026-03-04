@@ -11,6 +11,7 @@ const state = {
     isThinking: false,
     thinkingThreadId: null,  // Which thread the thinking state belongs to
     thinkingTimeout: null,   // Safety timeout to auto-clear stuck thinking
+    cancelledResponseForThread: null,  // Thread ID whose response should be discarded (after Stop)
     isStreaming: false,  // Track if currently receiving streaming tokens
     streamingContent: '',  // Accumulate streaming content
     theme: localStorage.getItem('theme') || 'light',
@@ -208,7 +209,8 @@ function setupEventListeners() {
     });
     
     elements.sendBtn.addEventListener('click', sendMessage);
-    
+    document.getElementById('stopBtn').addEventListener('click', stopRequest);
+
     // Clear chat
     document.getElementById('clearChat').addEventListener('click', clearChat);
     
@@ -319,25 +321,29 @@ function handleWebSocketMessage(data) {
             break;
         
         case 'thinking_message':
+            // Discard if user already hit Stop
+            if (state.cancelledResponseForThread) break;
             // Real-time thinking/tool_execution message from LLM
             // msg_type is 'thinking' (has content) or 'tool_execution' (just tools)
             addThinkingMessage(data.content, data.tool_calls || [], data.msg_type);
             break;
-        
+
         case 'stream_token':
+            // Discard if user already hit Stop
+            if (state.cancelledResponseForThread) break;
             // Streaming token from LLM
             handleStreamToken(data.token);
             break;
-        
+
         case 'stream_end':
             // End of streaming - finalize the message
-            handleStreamEnd();
+            if (!state.cancelledResponseForThread) handleStreamEnd();
             break;
-        
+
         case 'stream_cancel':
             // Cancel streaming - this was a tool-calling response, not final
             // It will be shown as a thinking message instead
-            handleStreamCancel();
+            if (!state.cancelledResponseForThread) handleStreamCancel();
             break;
             
         case 'response':
@@ -345,6 +351,12 @@ function handleWebSocketMessage(data) {
             // skip the visual update. The message is already persisted server-side.
             if (data.thread_id && data.thread_id !== state.currentThreadId) {
                 console.warn(`Response for thread ${data.thread_id} arrived on thread ${state.currentThreadId} — discarding visual update`);
+                break;
+            }
+            // Guard: if user hit Stop, discard the late-arriving response
+            if (state.cancelledResponseForThread === data.thread_id) {
+                console.warn(`Response for cancelled request on thread ${data.thread_id} — discarding`);
+                state.cancelledResponseForThread = null;
                 break;
             }
             state.turnCount++;
@@ -800,6 +812,13 @@ function setThinking(thinking, threadId) {
     elements.thinkingIndicator.classList.toggle('visible', thinking);
     elements.sendBtn.disabled = thinking;
 
+    // Toggle send/stop button visibility
+    const stopBtn = document.getElementById('stopBtn');
+    if (stopBtn) {
+        stopBtn.classList.toggle('visible', thinking);
+        elements.sendBtn.style.display = thinking ? 'none' : 'flex';
+    }
+
     // Clear any existing safety timeout
     if (state.thinkingTimeout) {
         clearTimeout(state.thinkingTimeout);
@@ -813,11 +832,31 @@ function setThinking(thinking, threadId) {
             if (state.isThinking) {
                 console.warn('Thinking safety timeout — auto-clearing stuck thinking state');
                 setThinking(false);
+                addErrorMessage('Request timed out after 2 minutes.');
             }
         }, 120_000);
     } else {
         state.thinkingThreadId = null;
     }
+}
+
+function stopRequest() {
+    if (!state.isThinking) return;
+    console.log('Stop request — clearing thinking state');
+
+    // Mark that we cancelled this thread's pending response
+    state.cancelledResponseForThread = state.thinkingThreadId || state.currentThreadId;
+
+    // Clear streaming state
+    if (state.isStreaming) {
+        handleStreamCancel();
+    }
+
+    // Clear thinking
+    setThinking(false);
+
+    // Show cancellation message
+    addErrorMessage('Request stopped. The server may still be processing — the response will be discarded.');
 }
 
 // Clear chat - deletes current thread and creates a new one
@@ -1680,16 +1719,16 @@ function toggleThreadsDrawer() {
 
 async function loadThreads() {
     try {
-        // Use WebSocket if available
-        if (state.connected && state.ws.readyState === WebSocket.OPEN) {
-            state.ws.send(JSON.stringify({ type: 'get_threads' }));
-        } else {
-            // Fallback to REST API
+        // Use REST when thinking (WebSocket is blocked processing the chat request)
+        // or when WebSocket is not available
+        if (state.isThinking || !state.connected || state.ws.readyState !== WebSocket.OPEN) {
             const response = await fetch('/api/threads');
             const data = await response.json();
             state.threads = data.threads || [];
             state.currentThreadId = data.current_thread_id;
             renderThreadsList();
+        } else {
+            state.ws.send(JSON.stringify({ type: 'get_threads' }));
         }
     } catch (error) {
         console.error('Failed to load threads:', error);
