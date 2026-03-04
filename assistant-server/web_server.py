@@ -1374,74 +1374,81 @@ async def websocket_chat(websocket: WebSocket):
             if data.get("type") == "chat":
                 message = data.get("message", "")
                 model = data.get("model")
+                # Capture thread_id at request time — use this throughout,
+                # not the global _current_thread_id which can change mid-flight.
                 thread_id = data.get("thread_id") or _current_thread_id
-                
+
                 # Parse model info
                 if model and "/" in model:
                     provider, model_name = model.split("/", 1)
                 else:
                     provider = _llm_config.provider.value if _llm_config else "mock"
                     model_name = _llm_config.model if _llm_config else "mock-default"
-                
+
                 logger.info(f"Chat request: model={model}, parsed provider={provider}, model_name={model_name}")
-                
-                # Get graph with the specified model
-                graph = await get_or_create_graph(provider, model_name)
-                
-                # Ensure thread exists - create with current model
-                if not thread_id:
-                    thread_id = _thread_manager.create_thread(
-                        "New Conversation",
-                        model_provider=provider,
-                        model_name=model_name
-                    )
-                    _current_thread_id = thread_id
-                else:
-                    # Thread exists - update its model if this is the first message
-                    metadata = _thread_manager.get_thread(thread_id)
-                    if metadata and metadata.message_count == 0:
-                        # First message - lock in the model being used
-                        if metadata.model_provider != provider or metadata.model_name != model_name:
-                            _thread_manager.update_thread(
-                                thread_id,
-                                model_provider=provider,
-                                model_name=model_name
-                            )
-                            logger.info(f"Updated thread {thread_id} model to {provider}/{model_name} on first message")
-                
-                # Increment message count immediately when user sends a message
-                # This ensures the thread persists in history even if LLM fails
-                current_metadata = _thread_manager.get_thread(thread_id)
-                if current_metadata:
-                    _thread_manager.update_thread(
-                        thread_id,
-                        message_count=current_metadata.message_count + 1
-                    )
-                
-                # Send thinking indicator
-                await websocket.send_json({"type": "thinking", "status": True})
-                
+
+                # Track state for safe cleanup in finally
+                thinking_sent = False
+                llm_logger = None
+
                 try:
+                    # Get graph with the specified model
+                    graph = await get_or_create_graph(provider, model_name)
+
+                    # Ensure thread exists - create with current model
+                    if not thread_id:
+                        thread_id = _thread_manager.create_thread(
+                            "New Conversation",
+                            model_provider=provider,
+                            model_name=model_name
+                        )
+                        _current_thread_id = thread_id
+                    else:
+                        # Thread exists - update its model if this is the first message
+                        metadata = _thread_manager.get_thread(thread_id)
+                        if metadata and metadata.message_count == 0:
+                            # First message - lock in the model being used
+                            if metadata.model_provider != provider or metadata.model_name != model_name:
+                                _thread_manager.update_thread(
+                                    thread_id,
+                                    model_provider=provider,
+                                    model_name=model_name
+                                )
+                                logger.info(f"Updated thread {thread_id} model to {provider}/{model_name} on first message")
+
+                    # Increment message count immediately when user sends a message
+                    # This ensures the thread persists in history even if LLM fails
+                    current_metadata = _thread_manager.get_thread(thread_id)
+                    if current_metadata:
+                        _thread_manager.update_thread(
+                            thread_id,
+                            message_count=current_metadata.message_count + 1
+                        )
+
+                    # Send thinking indicator (inside try so finally always clears it)
+                    await websocket.send_json({"type": "thinking", "status": True})
+                    thinking_sent = True
+
                     # Set up real-time log callback for this thread
                     from llm_logger import get_llm_logger
                     llm_logger = get_llm_logger()
-                    
+
                     # Get the current event loop for scheduling async tasks from sync callback
                     import asyncio
                     loop = asyncio.get_running_loop()
-                    
+
                     def log_callback(entry: dict):
                         """Send log entry to frontend in real-time."""
                         loop.create_task(websocket.send_json({
                             "type": "log_entry",
                             "entry": entry
                         }))
-                    
+
                     llm_logger.set_log_callback(thread_id, log_callback)
-                    
+
                     # Create streaming callback for real-time token streaming
                     streamed_content = []  # Track what we've streamed
-                    
+
                     async def stream_callback(token: str):
                         """Send streaming token to frontend."""
                         streamed_content.append(token)
@@ -1449,11 +1456,11 @@ async def websocket_chat(websocket: WebSocket):
                             "type": "stream_token",
                             "token": token
                         })
-                    
+
                     # Stream graph execution for real-time updates
                     from langchain_core.messages import AIMessage, HumanMessage
                     final_response = None
-                    
+
                     async for event in graph.stream_chat(message, thread_id, stream_callback=stream_callback):
                         # event is a dict with node name as key and output as value
                         for node_name, node_output in event.items():
@@ -1468,11 +1475,11 @@ async def websocket_chat(websocket: WebSocket):
                                         if streamed_content:
                                             await websocket.send_json({"type": "stream_cancel"})
                                             streamed_content.clear()
-                                        
+
                                         # Determine message type: "thinking" if has content, "tool_execution" if just tools
                                         has_content = msg.content and msg.content.strip()
                                         msg_type = "thinking" if has_content else "tool_execution"
-                                        
+
                                         # Send thinking/tool_execution message to frontend
                                         tool_names = [tc.get("name", "unknown") for tc in msg.tool_calls]
                                         await websocket.send_json({
@@ -1481,86 +1488,86 @@ async def websocket_chat(websocket: WebSocket):
                                             "content": msg.content or "",
                                             "tool_calls": tool_names,
                                         })
-                            
+
                             # Capture final response (store_turn means we're done)
                             if node_name == "store_turn":
                                 # Get the final state to extract response
                                 pass
-                    
+
                     # Signal end of streaming (if we streamed anything)
                     if streamed_content:
                         await websocket.send_json({"type": "stream_end"})
-                    
+
                     # Get final state and extract response
                     state = await graph.get_state(thread_id)
-                    
+
                     # Find the final response - only look at messages AFTER the last HumanMessage
                     # This prevents showing a previous turn's response when current turn returns empty
                     if state:
                         messages = state.get("messages", [])
-                        
+
                         # Find the index of the last user message (current turn start)
                         last_user_idx = -1
                         for i, msg in enumerate(messages):
                             if isinstance(msg, HumanMessage):
                                 last_user_idx = i
-                        
+
                         # Only look at messages after the last user message
                         current_turn_messages = messages[last_user_idx + 1:] if last_user_idx >= 0 else messages
-                        
+
                         for msg in reversed(current_turn_messages):
                             if isinstance(msg, AIMessage):
                                 has_tool_calls = msg.tool_calls and len(msg.tool_calls) > 0
                                 if not has_tool_calls and msg.content and msg.content.strip():
                                     final_response = msg.content
                                     break
-                        
+
                         # NO FALLBACK to previous turn's messages - that's the bug!
                         # If there's no response in current turn, say so explicitly
-                    
+
                     if not final_response:
                         final_response = "I processed your request but the model returned an empty response. This may happen when the model exhausts its reasoning budget on tool calls."
-                    
+
                     logger.info(f"State after chat: turn_count={state.get('turn_count', 0) if state else 'N/A'}, "
                                f"tool_calls={len(state.get('current_turn_tools', [])) if state else 0}, "
                                f"distilled={bool(state.get('distilled_summary')) if state else False}")
                     if state and _thread_manager:
                         _thread_manager.sync_from_state(thread_id, state)
-                    
+
                     # Get thread metadata
                     metadata = _thread_manager.get_thread(thread_id)
-                    
+
                     # Build thread_state from state (always show meaningful info)
                     state_parts = []
                     if state:
                         turn_count = state.get("turn_count", 0)
                         state_parts.append(f"🔄 Turns: {turn_count}")
-                        
+
                         mode = state.get("mode", "idle")
                         mode_display = {"idle": "💤 Idle", "logging": "📝 Logging", "querying": "🔍 Querying"}.get(mode, f"⚡ {mode}")
                         state_parts.append(mode_display)
-                        
+
                         target_date = state.get("target_date")
                         if target_date:
                             state_parts.append(f"📅 Date: {target_date}")
-                        
+
                         # Message count
                         messages = state.get("messages", [])
                         user_msgs = sum(1 for m in messages if hasattr(m, 'type') and m.type == 'human')
                         ai_msgs = sum(1 for m in messages if hasattr(m, 'type') and m.type == 'ai')
                         state_parts.append(f"💬 Messages: {user_msgs} user, {ai_msgs} assistant")
-                        
+
                         pending_entities = len(state.get("pending_entities", []))
                         pending_events = len(state.get("pending_events", []))
                         if pending_entities > 0 or pending_events > 0:
                             state_parts.append(f"📋 Pending: {pending_events} events, {pending_entities} entities")
-                        
+
                         if state.get("skeleton"):
                             skeleton_data = state.get("skeleton", {})
                             gaps = len(skeleton_data.get("gaps", []))
                             events = len(skeleton_data.get("events", []))
                             state_parts.append(f"🗓️ Skeleton: {events} events, {gaps} gaps")
-                    
+
                     # Build context summary (what's being passed to LLM)
                     context_parts = []
                     if state:
@@ -1574,28 +1581,28 @@ async def websocket_chat(websocket: WebSocket):
                             if messages:
                                 recent_count = min(len(messages), 6)
                                 context_parts.append(f"💬 Recent: Last {recent_count} messages in context")
-                        
+
                         # Skills loaded
                         skills = state.get("skills_content", "")
                         if skills:
                             # Count skills by looking for headers
                             skill_count = skills.count("##")
                             context_parts.append(f"📚 Skills: {skill_count} domain sections loaded")
-                        
+
                         # Skeleton context
                         if state.get("skeleton") and state.get("mode") == "logging":
                             context_parts.append("🗓️ Timeline skeleton included in context")
-                        
+
                         # Owner ID cached
                         if state.get("owner_id"):
                             context_parts.append(f"👤 Owner ID cached")
-                    
+
                     if not context_parts:
                         context_parts.append("Base system prompt only")
-                    
+
                     context_summary = "\n".join(context_parts)
-                    
-                    # Send response
+
+                    # Send response with thread_id so frontend can verify delivery
                     model_name = metadata.model_name if metadata else None
                     await websocket.send_json({
                         "type": "response",
@@ -1613,28 +1620,40 @@ async def websocket_chat(websocket: WebSocket):
                         "thread_id": thread_id,
                         "thread_title": metadata.title if metadata else "New Conversation",
                     })
-                    
+
                     # Send debug info
                     tool_calls = state.get("current_turn_tools", []) if state else []
                     skeleton_data = state.get("skeleton") if state else None
                     skeleton = skeleton_data.get("summary", "") if skeleton_data else ""
-                    
+
                     await websocket.send_json({
                         "type": "debug",
                         "tool_calls": tool_calls,
                         "skeleton": skeleton,
                     })
-                    
+
                 except Exception as e:
                     logger.error(f"WebSocket chat error: {e}", exc_info=True)
-                    await websocket.send_json({
-                        "type": "error",
-                        "error": str(e)
-                    })
+                    try:
+                        await websocket.send_json({
+                            "type": "error",
+                            "error": str(e)
+                        })
+                    except Exception:
+                        pass  # WebSocket may already be closed
                 finally:
-                    # Clear log callback
-                    llm_logger.set_log_callback(thread_id, None)
-                    await websocket.send_json({"type": "thinking", "status": False})
+                    # Clean up log callback (safe even if llm_logger was never set)
+                    if llm_logger:
+                        try:
+                            llm_logger.set_log_callback(thread_id, None)
+                        except Exception:
+                            pass
+                    # Always clear thinking indicator if it was sent
+                    if thinking_sent:
+                        try:
+                            await websocket.send_json({"type": "thinking", "status": False})
+                        except Exception:
+                            pass  # WebSocket may already be closed
             
             elif data.get("type") == "get_tools":
                 tools_data = await get_tools()

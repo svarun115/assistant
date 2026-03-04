@@ -9,6 +9,8 @@ const state = {
     displayMode: 'conversation', // 'conversation' or 'full'
     messages: [],
     isThinking: false,
+    thinkingThreadId: null,  // Which thread the thinking state belongs to
+    thinkingTimeout: null,   // Safety timeout to auto-clear stuck thinking
     isStreaming: false,  // Track if currently receiving streaming tokens
     streamingContent: '',  // Accumulate streaming content
     theme: localStorage.getItem('theme') || 'light',
@@ -307,7 +309,13 @@ function updateConnectionStatus(connected) {
 function handleWebSocketMessage(data) {
     switch (data.type) {
         case 'thinking':
-            setThinking(data.status);
+            if (data.status) {
+                // Starting to think — record which thread
+                setThinking(true, state.currentThreadId);
+            } else {
+                // Done thinking — always clear, regardless of thread
+                setThinking(false);
+            }
             break;
         
         case 'thinking_message':
@@ -333,12 +341,18 @@ function handleWebSocketMessage(data) {
             break;
             
         case 'response':
+            // Guard: if response is for a different thread (user switched mid-flight),
+            // skip the visual update. The message is already persisted server-side.
+            if (data.thread_id && data.thread_id !== state.currentThreadId) {
+                console.warn(`Response for thread ${data.thread_id} arrived on thread ${state.currentThreadId} — discarding visual update`);
+                break;
+            }
             state.turnCount++;
             // Only add message if we didn't already stream it
             // (the last message would be our finalized streaming message)
             const lastMsg = state.messages[state.messages.length - 1];
-            const alreadyStreamed = lastMsg && 
-                                    lastMsg.role === 'assistant' && 
+            const alreadyStreamed = lastMsg &&
+                                    lastMsg.role === 'assistant' &&
                                     lastMsg.type === 'response' &&
                                     lastMsg.content === data.content;
             if (!alreadyStreamed) {
@@ -446,6 +460,7 @@ async function sendMessage() {
             type: 'chat',
             message: message,
             model: state.tiles.chat.model,
+            thread_id: state.currentThreadId,
         }));
     } else {
         // Fallback to REST API
@@ -780,10 +795,29 @@ function scrollToBottom() {
     elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
 }
 
-function setThinking(thinking) {
+function setThinking(thinking, threadId) {
     state.isThinking = thinking;
     elements.thinkingIndicator.classList.toggle('visible', thinking);
     elements.sendBtn.disabled = thinking;
+
+    // Clear any existing safety timeout
+    if (state.thinkingTimeout) {
+        clearTimeout(state.thinkingTimeout);
+        state.thinkingTimeout = null;
+    }
+
+    if (thinking) {
+        state.thinkingThreadId = threadId || state.currentThreadId;
+        // Safety timeout: auto-clear thinking after 120s to prevent permanent stuck state
+        state.thinkingTimeout = setTimeout(() => {
+            if (state.isThinking) {
+                console.warn('Thinking safety timeout — auto-clearing stuck thinking state');
+                setThinking(false);
+            }
+        }, 120_000);
+    } else {
+        state.thinkingThreadId = null;
+    }
 }
 
 // Clear chat - deletes current thread and creates a new one
@@ -1813,9 +1847,16 @@ function mergeConsecutiveMessages(messages) {
 
 async function loadThread(threadId) {
     try {
+        // Always clear thinking state when switching threads — the in-flight
+        // response (if any) belongs to the old thread and will be discarded
+        // by the thread_id guard in the response handler.
+        if (state.isThinking) {
+            setThinking(false);
+        }
+
         const response = await fetch(`/api/threads/${threadId}/load`, { method: 'POST' });
         const data = await response.json();
-        
+
         state.currentThreadId = data.thread_id;
         updateThreadTitle(data.title);
         updateThreadEmoji(data.emoji);
