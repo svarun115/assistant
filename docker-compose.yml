@@ -10,13 +10,29 @@ version: "3.9"
 #   https://YOUR-DOMAIN/places/mcp      → google-places:1111
 #   https://YOUR-DOMAIN/splitwise/mcp   → splitwise:4000
 #
-# All endpoints require X-MCP-Key header (set MCP_API_KEY in .env.production).
+# Authentication: OAuth 2.1 via auth-gateway (JWT Bearer tokens).
+# The auth-gateway handles OAuth flows for Claude.ai and Claude Code.
 #
 # Usage:
 #   docker compose --env-file .env.production up -d
 #   docker compose --env-file .env.production logs -f garmin
 
 services:
+
+  auth-gateway:
+    build:
+      context: ./mcp-servers/mcp-auth-gateway
+    container_name: mcp-auth-gateway
+    ports:
+      - "127.0.0.1:8000:8000"
+    env_file: .env.production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 15s
+      retries: 3
 
   journal-db:
     build:
@@ -99,6 +115,21 @@ services:
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "curl -s http://localhost:4000/ > /dev/null"]
+      interval: 30s
+      timeout: 10s
+      start_period: 15s
+      retries: 3
+
+  github:
+    image: ghcr.io/github/github-mcp-server:latest
+    container_name: github-mcp
+    command: ["--transport", "sse", "--port", "2222"]
+    ports:
+      - "127.0.0.1:2222:2222"
+    env_file: .env.production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:2222/ > /dev/null"]
       interval: 30s
       timeout: 10s
       start_period: 15s

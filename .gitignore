@@ -2,6 +2,11 @@
 .env.production
 .env.local
 
+# MCP server configs with real keys/paths (use *.example.json for templates)
+mcp-servers.json
+mcp-servers.cloud.json
+.vscode/mcp.json
+
 # OAuth tokens
 tokens/
 
