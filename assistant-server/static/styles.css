@@ -2544,6 +2544,13 @@ body {
 .turn-summary {
     font-size: 10px;
     color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.turn-summary .turn-copy-btn {
+    margin-left: auto;
 }
 
 .turn-logs {
