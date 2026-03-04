@@ -146,35 +146,46 @@ def build_personal_profile() -> AssistantProfile:
     )
 
     # --- MCP servers ---
+    # MCP_API_KEY is required for cloud-hosted servers (Nginx validates X-MCP-Key header)
+    mcp_headers = {}
+    mcp_api_key = os.getenv("MCP_API_KEY")
+    if mcp_api_key:
+        mcp_headers = {"X-MCP-Key": mcp_api_key}
+
     mcp_servers = [
         MCPServerConfig(
             name="journal-db",
             transport=MCPTransport.HTTP,
             url=os.getenv("MCP_JOURNAL_URL", "http://localhost:3333/mcp"),
+            headers=mcp_headers,
             description="Personal journal database",
         ),
         MCPServerConfig(
             name="garmin",
             transport=MCPTransport.HTTP,
             url=os.getenv("MCP_GARMIN_URL", "http://localhost:5555/mcp"),
+            headers=mcp_headers,
             description="Garmin fitness data",
         ),
         MCPServerConfig(
             name="google-workspace",
             transport=MCPTransport.HTTP,
             url=os.getenv("MCP_GOOGLE_URL", "http://localhost:3000/mcp"),
+            headers=mcp_headers,
             description="Google Calendar, Tasks, Gmail, Sheets",
         ),
         MCPServerConfig(
             name="google-places",
             transport=MCPTransport.HTTP,
             url=os.getenv("MCP_PLACES_URL", "http://localhost:1111/mcp"),
+            headers=mcp_headers,
             description="Google Places API",
         ),
         MCPServerConfig(
             name="splitwise",
             transport=MCPTransport.HTTP,
             url=os.getenv("MCP_SPLITWISE_URL", "http://localhost:4000/mcp"),
+            headers=mcp_headers,
             description="Splitwise expense tracking",
         ),
     ]
