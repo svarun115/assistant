@@ -2393,6 +2393,9 @@ function renderTurnGroup(group) {
                 <div class="turn-summary">
                     ${requests}req • ${responses}res${tools > 0 ? ` • ${tools}🔧` : ''}
                     ${hasError ? ' • ❌' : ''}
+                    <button class="log-copy-btn turn-copy-btn" onclick="copyTurnLogs(event, ${group.turn})" title="Copy full turn">
+                        <i data-lucide="clipboard-list" class="log-copy-icon"></i>
+                    </button>
                 </div>
             </div>
             <div class="turn-logs" style="display:none">
@@ -2539,6 +2542,34 @@ function copyLogEntry(event, logId) {
         console.error('Failed to copy log:', e);
         showToast('Failed to copy log', true);
     }
+}
+
+// Copy all logs for a turn to clipboard
+function copyTurnLogs(event, turnNumber) {
+    event.stopPropagation();
+    const turnGroup = document.querySelector(`.turn-group[data-turn="${turnNumber}"]`);
+    if (!turnGroup) return;
+
+    const logDataEls = turnGroup.querySelectorAll('.log-data');
+    const logs = [];
+    for (const el of logDataEls) {
+        try { logs.push(JSON.parse(el.textContent)); } catch (e) { /* skip */ }
+    }
+
+    if (logs.length === 0) {
+        showToast('No logs to copy', true);
+        return;
+    }
+
+    // Format as readable text block
+    const lines = [`=== Turn ${turnNumber} (${logs.length} entries) ===\n`];
+    for (const log of logs) {
+        lines.push(JSON.stringify(log, null, 2));
+        lines.push('');
+    }
+
+    navigator.clipboard.writeText(lines.join('\n'));
+    showToast(`Turn ${turnNumber} copied (${logs.length} entries)`);
 }
 
 function toggleLogDetails(element) {
