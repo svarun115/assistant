@@ -9,6 +9,7 @@ version: "3.9"
 #   https://YOUR-DOMAIN/google/mcp      → google-workspace:3000
 #   https://YOUR-DOMAIN/places/mcp      → google-places:1111
 #   https://YOUR-DOMAIN/splitwise/mcp   → splitwise:4000
+#   https://YOUR-DOMAIN/skills/mcp      → skills-data:6666
 #
 # Authentication: OAuth 2.1 via auth-gateway (JWT Bearer tokens).
 # The auth-gateway handles OAuth flows for Claude.ai and Claude Code.
@@ -135,7 +136,25 @@ services:
       start_period: 15s
       retries: 3
 
+  skills-data:
+    build:
+      context: ./mcp-servers/skills-data-mcp-server
+    container_name: skills-data-mcp
+    ports:
+      - "127.0.0.1:6666:6666"
+    volumes:
+      - skills-data:/data/skills
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:6666/healthz || exit 1"]
+      interval: 30s
+      timeout: 10s
+      start_period: 15s
+      retries: 3
+
 volumes:
   garmin-tokens:
     # Persists garth session tokens across container restarts.
     # Initial tokens are copied from local ~/.garminconnect/ via the provision script.
+  skills-data:
+    # Persists skill data files across container restarts.
