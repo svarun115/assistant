@@ -1,0 +1,18 @@
+[Unit]
+Description=MCP Auth Gateway Server
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/assistant/mcp-servers/mcp-auth-gateway
+EnvironmentFile=/home/ubuntu/assistant/.env.production
+ExecStart=/home/ubuntu/assistant/mcp-servers/mcp-auth-gateway/.venv/bin/python -m src.main
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mcp-auth-gateway
+
+[Install]
+WantedBy=multi-user.target

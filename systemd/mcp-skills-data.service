@@ -1,0 +1,19 @@
+[Unit]
+Description=MCP Skills Data Server
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/assistant/mcp-servers/skills-data-mcp-server
+EnvironmentFile=/home/ubuntu/assistant/.env.production
+Environment=SKILLS_DATA_DIR=/home/ubuntu/assistant/data/skills
+ExecStart=/home/ubuntu/assistant/mcp-servers/skills-data-mcp-server/.venv/bin/python -m skills_data_mcp --http --host 0.0.0.0 --port 6666
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mcp-skills-data
+
+[Install]
+WantedBy=multi-user.target

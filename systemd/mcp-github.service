@@ -1,0 +1,17 @@
+[Unit]
+Description=MCP GitHub Server
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+EnvironmentFile=/home/ubuntu/assistant/.env.production
+ExecStart=/usr/local/bin/github-mcp-server --transport sse --port 2222
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mcp-github
+
+[Install]
+WantedBy=multi-user.target

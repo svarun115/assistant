@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # Personal Assistant — Azure VM Provisioning Script
 #
-# Provisions an Azure B2ms VM, clones the monorepo, deploys all 5 MCP servers,
-# and configures Nginx + TLS. Run this from your local machine.
+# Provisions an Azure B2ms VM, clones all repos, deploys MCP servers
+# as systemd services, and configures Nginx + TLS.
+# Run this from your local machine.
 #
 # Prerequisites:
 #   1. Azure CLI logged in:  az login
 #   2. Repo pushed to GitHub as svarun115/assistant (private)
 #   3. .env.production filled in (copy from .env.production.example)
 #   4. tokens/google/token.json and credentials.json present locally
-#      (at mcp-servers/google-workspace-mcp-server/ or tokens/google/)
 #   5. SSH key at ~/.ssh/id_rsa  (generate: ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa)
 #
 # Usage:
@@ -38,16 +38,16 @@ CLAUDE_REPO="https://github.com/svarun115/claude-config"
 
 # MCP servers (each has its own repo)
 MCP_REPOS=(
+  "mcp-servers/mcp-auth-gateway|https://github.com/svarun115/mcp-auth-gateway.git"
   "mcp-servers/db-mcp-server|https://github.com/svarun115/journal-db-mcp-server.git"
   "mcp-servers/garmin-mcp-server|https://github.com/svarun115/garmin-mcp-server.git"
   "mcp-servers/google-workspace-mcp-server|https://github.com/svarun115/google-workspace-mcp-server.git"
   "mcp-servers/googleplaces-mcp-server|https://github.com/svarun115/googleplaces-mcp-server.git"
   "mcp-servers/splitwise-mcp-server|https://github.com/svarun115/splitwise-mcp-server.git"
+  "mcp-servers/skills-data-mcp-server|https://github.com/svarun115/skills-data-mcp-server.git"
 )
 
 # Domain for HTTPS.
-#   Set to your own domain (e.g. "mcp.yourdomain.com") and add DNS A → VM IP.
-#   Leave empty to use Azure's built-in FQDN (assistant-vm.eastus.cloudapp.azure.com).
 DOMAIN=""
 
 # ─── Helpers ───────────────────────────────────────────────────────────────
@@ -78,10 +78,10 @@ wait_for_ssh() {
 
 wait_for_cloud_init() {
   local ip="$1"
-  echo "  Waiting for cloud-init (Docker install)..."
+  echo "  Waiting for cloud-init (Python/Node install)..."
   for i in {1..30}; do
     if ssh_run "$ip" "test -f /tmp/cloud-init-done" >/dev/null 2>&1; then
-      echo "  ✓ Docker ready"; return 0
+      echo "  ✓ Runtime ready"; return 0
     fi
     sleep 15; echo "  ... ($i/30)"
   done
@@ -99,12 +99,11 @@ preflight() {
     echo "  Generate: ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa"
     exit 1
   }
-  # Find Google OAuth tokens (might be in mcp-servers dir or tokens/)
   GOOGLE_TOKEN_SRC=""
   for candidate in \
-    "$SCRIPT_DIR/tokens/google/token.json" \
-    "$SCRIPT_DIR/mcp-servers/google-workspace-mcp-server/token.json"; do
-    [[ -f "$candidate" ]] && GOOGLE_TOKEN_SRC="$(dirname "$candidate")" && break
+    "$SCRIPT_DIR/tokens/google" \
+    "$SCRIPT_DIR/mcp-servers/google-workspace-mcp-server"; do
+    [[ -f "$candidate/token.json" ]] && GOOGLE_TOKEN_SRC="$candidate" && break
   done
   [[ -n "$GOOGLE_TOKEN_SRC" ]] || { echo "ERROR: Google token.json not found."; exit 1; }
   [[ -f "$GOOGLE_TOKEN_SRC/credentials.json" ]] || { echo "ERROR: Google credentials.json not found."; exit 1; }
@@ -119,7 +118,7 @@ provision() {
   echo "  ✓ Resource group ready"
 
   echo ""
-  echo "[2/3] Creating VM '$VM_NAME' ($VM_SIZE) with Docker pre-installed..."
+  echo "[2/3] Creating VM '$VM_NAME' ($VM_SIZE)..."
   az vm create \
     --resource-group "$RESOURCE_GROUP" \
     --name "$VM_NAME" \
@@ -144,12 +143,6 @@ provision() {
   echo ""
   echo "  VM public IP : $VM_IP"
   echo "  Azure FQDN   : $AZURE_FQDN"
-  if [[ -n "$DOMAIN" ]]; then
-    echo ""
-    echo "  ── ACTION NEEDED ─────────────────────────────────────────"
-    echo "  Add DNS A record:  $DOMAIN  →  $VM_IP"
-    echo "  ──────────────────────────────────────────────────────────"
-  fi
 }
 
 # ─── Deploy ────────────────────────────────────────────────────────────────
@@ -157,25 +150,20 @@ deploy() {
   local ip; ip=$(get_vm_ip)
 
   echo ""
-  echo "[4/6] Waiting for VM and Docker..."
+  echo "[4/7] Waiting for VM and runtimes..."
   wait_for_ssh "$ip"
   wait_for_cloud_init "$ip"
 
   echo ""
-  echo "[5/6] Cloning repos and copying secrets..."
+  echo "[5/7] Cloning repos and copying secrets..."
 
-  # Read GitHub token from local .env.production for authenticating private repos
   GITHUB_TOKEN=$(grep -E '^GITHUB_TOKEN=' "$SCRIPT_DIR/.env.production" | cut -d= -f2-)
   [[ -n "$GITHUB_TOKEN" ]] || { echo "ERROR: GITHUB_TOKEN missing from .env.production"; exit 1; }
 
-  # Build authenticated URLs (token used for all repos — avoids non-interactive TTY issues)
   local auth_repo; auth_repo="${REPO/https:\/\//https:\/\/$GITHUB_TOKEN@}"
   local auth_claude; auth_claude="${CLAUDE_REPO/https:\/\//https:\/\/$GITHUB_TOKEN@}"
-
-  # Absolute path on VM — avoids ~ expansion issues inside single-quoted SSH strings
   local RDIR="/home/$VM_USER/assistant"
 
-  # Helper: clone-or-pull using absolute paths
   clone_or_pull() {
     local url="$1" dest="$2"
     ssh_run "$ip" "
@@ -188,11 +176,9 @@ deploy() {
     "
   }
 
-  # Framework repo
   echo "  Cloning framework..."
   clone_or_pull "$auth_repo" "$RDIR"
 
-  # MCP servers
   ssh_run "$ip" "mkdir -p $RDIR/mcp-servers"
   for entry in "${MCP_REPOS[@]}"; do
     subdir="${entry%%|*}"; url="${entry##*|}"
@@ -201,11 +187,9 @@ deploy() {
     clone_or_pull "$auth_url" "$RDIR/$subdir"
   done
 
-  # Personal Claude config
   echo "  Cloning .claude (skills, agents, plans)..."
   clone_or_pull "$auth_claude" "$RDIR/.claude"
 
-  # Copy secrets (gitignored — never in any repo)
   echo "  Copying .env.production..."
   scp $SSH_OPTS -i "$SSH_KEY_PATH" \
     "$SCRIPT_DIR/.env.production" \
@@ -224,26 +208,18 @@ deploy() {
     "$SCRIPT_DIR/.claude/data/" \
     "$VM_USER@$ip:$RDIR/.claude/"
 
-  echo "  Copying Garmin auth tokens into Docker volume..."
-  # Find local garmin tokens
+  echo "  Copying Garmin auth tokens..."
   GARMIN_TOKEN_SRC=""
   for candidate in "$HOME/.garminconnect" "$HOME/.garth"; do
     [[ -f "$candidate/oauth1_token.json" ]] && GARMIN_TOKEN_SRC="$candidate" && break
   done
   if [[ -n "$GARMIN_TOKEN_SRC" ]]; then
+    ssh_run "$ip" "mkdir -p $RDIR/tokens/garmin"
     scp $SSH_OPTS -i "$SSH_KEY_PATH" \
       "$GARMIN_TOKEN_SRC/oauth1_token.json" \
       "$GARMIN_TOKEN_SRC/oauth2_token.json" \
-      "$VM_USER@$ip:/tmp/"
-    # Docker Compose prefixes volume with project name — use assistant_garmin-tokens
-    ssh_run "$ip" "
-      docker run --rm \
-        -v assistant_garmin-tokens:/dst \
-        -v /tmp:/src \
-        python:3.11-slim \
-        sh -c 'cp /src/oauth1_token.json /dst/ && cp /src/oauth2_token.json /dst/'
-    "
-    echo "  ✓ Garmin tokens copied to assistant_garmin-tokens volume"
+      "$VM_USER@$ip:$RDIR/tokens/garmin/"
+    echo "  ✓ Garmin tokens copied"
   else
     echo "  ⚠ Garmin tokens not found locally — run initial auth manually after deploy"
   fi
@@ -251,30 +227,19 @@ deploy() {
   echo "  ✓ All files in place"
 
   echo ""
-  echo "[6/6] Starting containers..."
+  echo "[6/7] Running deploy script (venvs + systemd)..."
   ssh_run "$ip" "cd $RDIR && chmod +x deploy.sh && ./deploy.sh deploy"
 
   local effective_domain="${DOMAIN:-$VM_NAME.$LOCATION.cloudapp.azure.com}"
   echo ""
-  echo "  Configuring Nginx + TLS for $effective_domain..."
-  ssh_run "$ip" "cd $RDIR && ./deploy.sh setup-nginx '$effective_domain'"
+  echo "[7/7] Configuring Nginx + TLS for $effective_domain..."
+  ssh_run "$ip" "cd $RDIR && ./deploy.sh setup-nginx $effective_domain"
 
   MCP_API_KEY=$(grep -E '^MCP_API_KEY=' "$SCRIPT_DIR/.env.production" | cut -d= -f2-)
   echo ""
-  echo "═══════════════════════════════════════════════════════════════"
-  echo " ✓  Deployment complete!"
-  echo ""
-  echo "  MCP servers at:"
-  echo "    https://$effective_domain/journal-db/mcp"
-  echo "    https://$effective_domain/garmin/mcp"
-  echo "    https://$effective_domain/google/mcp"
-  echo "    https://$effective_domain/places/mcp"
-  echo "    https://$effective_domain/splitwise/mcp"
-  echo ""
-  echo "  Update ~/.claude.json mcpServers block using mcp-servers.cloud.example.json"
-  echo "  Domain:  $effective_domain"
+  echo "=== Deployment complete! ==="
+  echo "  MCP servers at https://$effective_domain/{journal-db,garmin,google,places,splitwise}/mcp"
   echo "  API key: $MCP_API_KEY"
-  echo "═══════════════════════════════════════════════════════════════"
 }
 
 # ─── Subcommands ───────────────────────────────────────────────────────────
@@ -284,8 +249,8 @@ case "${1:-all}" in
   ssh)    ssh $SSH_OPTS -i "$SSH_KEY_PATH" "$VM_USER@$(get_vm_ip)" ;;
   ip)     get_vm_ip ;;
   destroy)
-    echo "WARNING: This permanently deletes the VM and all container data."
-    read -p "Type 'yes' to confirm: " confirm
+    echo "WARNING: This permanently deletes the VM and all data."
+    read -p "Confirm (yes): " confirm
     [[ "$confirm" == "yes" ]] || { echo "Aborted."; exit 1; }
     az group delete --name "$RESOURCE_GROUP" --yes --no-wait
     echo "Deletion queued."

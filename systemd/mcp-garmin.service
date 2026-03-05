@@ -1,0 +1,19 @@
+[Unit]
+Description=MCP Garmin Server
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/assistant/mcp-servers/garmin-mcp-server
+EnvironmentFile=/home/ubuntu/assistant/.env.production
+Environment=GARMINTOKENS=/home/ubuntu/assistant/tokens/garmin
+ExecStart=/home/ubuntu/assistant/mcp-servers/garmin-mcp-server/.venv/bin/python -m garmin_mcp --http --host 0.0.0.0 --port 5555
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mcp-garmin
+
+[Install]
+WantedBy=multi-user.target

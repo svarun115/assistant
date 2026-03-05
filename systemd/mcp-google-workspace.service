@@ -1,0 +1,18 @@
+[Unit]
+Description=MCP Google Workspace Server
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/assistant/mcp-servers/google-workspace-mcp-server
+EnvironmentFile=/home/ubuntu/assistant/.env.production
+ExecStart=/home/ubuntu/assistant/mcp-servers/google-workspace-mcp-server/.venv/bin/python src/server.py --http --port 3000
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mcp-google-workspace
+
+[Install]
+WantedBy=multi-user.target
