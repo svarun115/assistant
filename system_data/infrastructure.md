@@ -49,23 +49,6 @@
 
 ## Known Failure Modes
 
-### Port conflicts on startup
-- **Symptom**: Service `activating` / `EADDRINUSE` in journal logs
-- **Root cause**: Old Docker containers holding the port, or Docker service auto-restarting
-- **Fix**: `sudo systemctl stop docker docker.socket containerd && sudo systemctl disable docker docker.socket`
-
-### github-mcp-server `unknown flag: --transport`
-- **Symptom**: mcp-github fails with "unknown flag: --transport"
-- **Root cause**: The binary uses subcommands now. Old flag `--transport sse --port N` is invalid in v0.31.0+
-- **Fix**: Use `github-mcp-server http --port 2222` in ExecStart
-- **Fixed in**: systemd/mcp-github.service (2026-03-05)
-
-### googleplaces TypeScript build: missing dist/transport
-- **Symptom**: `ERR_MODULE_NOT_FOUND` for `dist/transport/http.js`
-- **Root cause**: Committed dist/ only had `index.js`; `npm ci --omit=dev` skips `@types/*` devDeps causing tsc errors but output still generated
-- **Fix**: `npm install -g typescript && cd mcp-servers/googleplaces-mcp-server && tsc`
-- **Note**: tsc emits errors about missing `@types/node`, `@types/express`, `@types/ws` but still compiles successfully
-
 ### journal-db slow start (~60-90s)
 - **Symptom**: HTTP health check fails for 60-90s after start
 - **Root cause**: Downloads/loads sentence-transformers model on first boot
@@ -73,9 +56,8 @@
 
 ### Disk pressure
 - **Symptom**: venv creation fails, `df -h /` shows >90% used
-- **Root cause**: Multiple Docker rebuilds, or large pip packages (torch)
-- **Fix (Docker era)**: `docker system prune -af` — safe, preserves named volumes
-- **Fix (systemd era)**: Docker is removed; run `pip cache purge` or clean old venvs
+- **Root cause**: Large pip packages (torch), old venvs accumulating
+- **Fix**: `pip cache purge` or manually remove unused venvs in `mcp-servers/*/`
 
 ### Garmin tokens missing
 - **Symptom**: mcp-garmin crashes with auth error
@@ -88,6 +70,21 @@
 - **Fix**: Re-run OAuth flow locally, copy new token.json to VM
 - **Cannot auto-fix**: Requires human
 
+### Missing RFC 9728 oauth-protected-resource endpoint for a service
+- **Symptom**: Claude Code gets stuck after client registration; cannot start OAuth flow for a specific MCP server; HTTP 404 on `/.well-known/oauth-protected-resource/<service>/mcp`
+- **Root cause**: When a new MCP service is added (e.g. mcp-github), its corresponding `/.well-known/oauth-protected-resource/<service>/mcp` nginx location block may not have been added to `/etc/nginx/sites-available/assistant`
+- **Fix**: Insert a `location = /.well-known/oauth-protected-resource/<service>/mcp` block returning RFC 9728 JSON into `/etc/nginx/sites-available/assistant`, before the `# -- MCP Server Locations` comment. Use Python to edit safely (avoids heredoc/JSON quoting issues). Then `sudo nginx -t && sudo nginx -s reload`
+- **Endpoint format**: `{"resource":"https://DOMAIN/<service>/mcp","authorization_servers":["https://DOMAIN/auth"],"bearer_methods_supported":["header"]}`
+- **Services requiring entries**: journal-db, garmin, google, places, splitwise, skills, github (one per proxied MCP endpoint)
+
+
+### uvicorn stuck in deactivating on systemctl restart
+- **Symptom**: `sudo systemctl restart mcp-<service>` leaves old process in `deactivating (stop-sigterm)` indefinitely; `systemctl status` shows "Waiting for connections to close"
+- **Root cause**: uvicorn waits for keep-alive HTTP connections to drain before exiting; long-lived SSE/streaming clients prevent this
+- **Services affected**: any uvicorn-based Python MCP server (mcp-skills-data confirmed 2026-03-05)
+- **Fix**: `sudo systemctl kill -s SIGKILL mcp-<service> && sleep 2 && sudo systemctl start mcp-<service>`
+- **Note**: `systemctl restart` is unreliable for these services; prefer kill+start pattern
+
 ## Diagnosis Runbook
 
 1. **Check service status**: `systemctl is-active mcp-*`
@@ -97,3 +94,4 @@
 5. **Disk**: `df -h /`
 6. **Restart service**: `sudo systemctl restart mcp-<service>`
 7. **Restart all**: `cd /home/ubuntu/assistant && ./deploy.sh restart`
+
