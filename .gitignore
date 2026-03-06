@@ -18,6 +18,9 @@ mcp-servers/
 # Personal Claude config has its own private repo (svarun115/claude-personal)
 .claude/
 
+# Claude.ai migration artifacts have their own repo (svarun115/claude-ai)
+claude.ai/
+
 # ─── Python ───────────────────────────────────────────────────────────────────
 __pycache__/
 *.pyc
