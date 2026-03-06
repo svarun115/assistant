@@ -1,11 +1,13 @@
 """
-Skills Loader — loads skill system prompts from ~/.claude/skills/.
+Skills Loader — loads skill system prompts from the assistant .claude/skills/ directory.
 
 Each skill is a directory with a SKILL.md (main entry point) and optional
 supporting files (logging.md, entities.md, etc.) that are combined at load time.
 
-The skills/ directory is a symlink to ~/.claude/skills/ — single source of truth
-shared between Claude Code and journal-processor.
+TODO: Single source of truth is AI Projects/Assistant/.claude/skills/ — all skill
+edits go there. This loader resolves that path automatically (see candidates below).
+Do NOT copy skill files into assistant-server/skills/; that directory is intentionally
+empty. On Linux/Mac you can symlink it: ln -s ../.claude/skills skills
 """
 
 import logging
@@ -117,13 +119,17 @@ class SkillsLoader:
         if skills_dir:
             self.skills_dir = Path(skills_dir)
         else:
+            # TODO: canonical source is AI Projects/Assistant/.claude/skills/
+            # Candidates are checked in order; first non-empty directory wins.
+            # assistant-server/skills/ is intentionally empty — add a symlink there
+            # on Linux/Mac or pass skills_dir explicitly in config.
             candidates = [
-                Path(__file__).parent / "skills",
+                Path(__file__).parent.parent / ".claude" / "skills",  # AI Projects/Assistant/.claude/skills/
+                Path(__file__).parent / "skills",                       # assistant-server/skills/ (symlink fallback)
                 Path("skills"),
-                Path("agent-orchestrator/skills"),
             ]
             self.skills_dir = next(
-                (c.resolve() for c in candidates if c.exists()), None
+                (c.resolve() for c in candidates if c.exists() and any(c.iterdir())), None
             )
 
         # data_dir: where user-context.md and daily-context.json live.
