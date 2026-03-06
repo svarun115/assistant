@@ -64,6 +64,22 @@ After any write, consider: "What other system should reflect this?"
 
 Ask or act — don't silently leave systems out of sync.
 
+## Skill-Store Reconciliation
+
+`daily-plan.md` is persisted in the skills-data MCP server (the skill-store). This is the **only** persistence mechanism available in claude.ai — there is no local filesystem.
+
+**Tools:** `read_skill_file`, `write_skill_file`, `list_skill_files`
+**Skill name:** `"daily-tracker"` | **File:** `"daily-plan.md"`
+
+**Rules (apply at every CHECK-IN, SETUP, and WRAP-UP):**
+
+| Step | Action |
+|------|--------|
+| **Start** | Call `read_skill_file(skill="daily-tracker", filename="daily-plan.md")` to load today's plan. If not found → fresh day, proceed to SETUP. |
+| **End (after any plan update)** | Call `write_skill_file(skill="daily-tracker", filename="daily-plan.md", content=<updated plan>, description="Daily plan YYYY-MM-DD")` to persist. |
+
+Note: The `~/.claude/data/daily-plan.md` path in mode files is a convention for Claude Code. In claude.ai, all reads/writes go through the skill-store tools above.
+
 ## `daily-context.json` Updates
 
 When to write back to the cache:
