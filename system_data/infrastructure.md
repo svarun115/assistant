@@ -95,3 +95,8 @@
 6. **Restart service**: `sudo systemctl restart mcp-<service>`
 7. **Restart all**: `cd /home/ubuntu/assistant && ./deploy.sh restart`
 
+
+### systemctl not found in non-login SSH shell
+- **Symptom**: `systemctl: command not found` when chaining multiple commands in a single SSH session using `&&` or `;`
+- **Root cause**: Non-login shells don't have `/usr/bin` in PATH for some commands; `sudo systemctl` works but bare `systemctl` may not resolve in complex chained bash scripts run over SSH
+- **Fix**: Always prefix with `sudo systemctl` (not bare `systemctl`) in SSH commands; avoid mixing sudo and non-sudo systemctl calls in the same chained command block
